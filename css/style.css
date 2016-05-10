@@ -1,0 +1,839 @@
+@charset "utf-8";
+
+*
+{
+	font-family: 'Quicksand', sans-serif;
+}
+body
+{
+	height: 100%;
+	background-color:#242b31;
+}
+.banner
+{
+	background-color:#65b2d0;
+	height:3em;
+	width:auto;
+	border-radius:5px;
+}	
+#header
+{
+	height:7em;
+	min-width: 890px;
+}
+footer
+{
+	width:100%;
+	margin-top:90px;
+	text-align:center;
+	color:#628277;
+	clear:both;
+}	
+footer>a
+{
+	color:#3A6B77;
+	font-weight:bold;
+	text-decoration: none;
+}
+footer>a:hover
+{
+	color:#87DDC6;
+}
+#titleSection, #titleSection>a
+{
+	float:left;
+	font-size: 50px;
+	text-align: left;
+	margin-top: 0.8em;
+	margin-left: 0.3em;
+	color: #54AF97;
+}
+#titleSection>a
+{
+	text-decoration: none;
+	margin:0;
+}
+#website-intro
+{
+	margin-top:150px;
+	margin-bottom:30px;
+	text-align: center;
+}
+#intro-header
+{
+	color:white;
+	font-weight:bold;
+	font-size:26px;
+}
+#error-info
+{
+	color:white;
+	margin-top:15px;
+	font-size:20px;
+}
+.section-hidden
+{
+	display: none;	
+}
+.fixed-bottom
+{
+    position:fixed;
+    bottom:8px;
+}
+.fixed-bottom-banner
+{
+	margin-right:15px;	
+}
+#bar-intro
+{
+	margin: auto;
+	margin-top:10px;
+	text-align:center;
+	width: 50%;
+	height: 20px;
+}
+/*------------------------------------------------------------------------------------------------------
+	TOP NAVIGATION BAR
+------------------------------------------------------------------------------------------------------*/
+#inputSection
+{
+	float:right;
+	margin-right:1em;
+}
+.topSections
+{
+	display:inline-block;
+	margin-right: 0.1em;
+	margin-left: 0.1em;
+	margin-top:2.75em;
+	margin-bottom:0.5em;
+}
+input[type="text"], .table-container input
+{
+	margin: 0;
+	font-family: 'Quicksand', sans-serif;
+	font-size: 17px;
+	text-indent: .6em;
+	appearance: none;
+	box-shadow: none;
+	border-radius: 8px;
+	background-color: #EDFBFD;
+}
+#divRegionPicker
+{
+	background-color: transparent;
+	border-radius: 8px;
+}
+#regionPicker
+{
+	width:6em;
+	outline: none;
+	font-family: sans-serif;
+	font-size: 17px;
+	text-indent: 6%;
+	box-shadow: none;
+	border-radius: 8px;
+	background: url(../img/down_arrow_select.png) no-repeat right #EDFBFD;
+	
+	padding-top: .42em;
+	padding-bottom: .35em;
+	border: solid 3px #54AF97;
+	transition: box-shadow 0.3s, border 0.3s;
+
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+#regionPicker:hover
+{
+	background: url(../img/down_arrow_select.png) no-repeat right #DAEEF1;
+	cursor:pointer;
+}
+input[type="text"]:focus, .table-container input:focus
+{
+  outline: none;
+  border: solid 3px #54AF97;
+  box-shadow: 0 0 10px 1px #A5FFD2;
+}
+input[type="text"], .table-container input
+{
+	padding-top: .3em;
+	padding-bottom: .4em;
+	border: solid 3px #54AF97;
+	transition: box-shadow 0.3s, border 0.3s;
+}
+#searchButton
+{
+	width: 6em;
+	height: 2.27em;
+	font-size: 18px;
+	color:white;
+	text-indent: -0.2em;
+	background-color: #4DE489;
+	border: 3px outset #54AF97;
+	border-radius: 8px;
+	outline: none;
+	text-shadow: 0 0 3px #073600;
+}
+#searchButton:hover
+{
+	background-color: #58D58A;
+	cursor:pointer;
+}
+#searchButton:active
+{
+  	border: inset 3px #54AF97;
+	background-color: #91ead1;
+	text-indent: 0em;
+}
+
+/*------------------------------------------------------------------------------------------------------
+	SECTION - LANES
+------------------------------------------------------------------------------------------------------*/
+.section-lanes
+{
+	margin: auto;
+	width:100%;
+	text-align:center;
+	margin-top:30px;
+	margin-bottom:30px;
+}
+.dont-break-container
+{
+	min-width:700px;
+	display:inline-block;
+}
+.section-lanes .grade
+{
+	margin-left:8px;
+	margin-right:20px;
+	height: 40px;
+	width: 55.5px;
+}
+.individual-section
+{	
+	display:inline-block;	
+}
+#vertical-text, #vertical-text-champions, #vertical-text-profile
+{
+	width: 80px;
+	height: 440px;
+	background-color: #2F5B6C;
+	border-radius: 5px;
+	position:absolute;
+	left:10px;
+}
+#vertical-text>p, #vertical-text-champions>p, #vertical-text-profile>p
+{
+	transform: rotate(1710deg);
+	color: #80E19F;
+	font-weight: 700;
+	letter-spacing: 10px;
+	text-decoration: bold;
+	text-align: center;
+	text-shadow: 4px 0px 4px #242b31;
+	font:60px "quicksand", Helvetica, sans-serif;
+	font-style: italic;
+}
+#vertical-text>p
+{
+	text-indent: -245px;
+}
+#grades-container
+{
+	margin-bottom:20px;	
+}
+#stackedChart, #donutChart
+{
+	height: 400px;
+	width:600px;
+	margin-left: 5px;
+	margin-right: 10px;
+}
+#donutChart
+{
+	height:443px;
+	width:400px;
+}
+/*------------------------------------------------------------------------------------------------------
+	SECTION - SUMMARY
+------------------------------------------------------------------------------------------------------*/
+#summary-mastery
+{
+	background-position: -370px 0%;
+}
+#summary-chests
+{
+	background-position: -740px 0%;
+}
+.test-summary-individual-containers
+{
+	height: 460px;
+	width: 350px;
+	margin-left: 20px;
+	margin-bottom:30px;
+	background-repeat: no-repeat;
+	background-size: 315% auto;
+	border-radius: 8px;
+	background-image: url(http://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg);
+}
+.test-header
+{
+	width: 346px;
+	height: 448px;
+	padding-top: 8px;
+	position: absolute;
+	background-color: rgba(0,0,0,0.64);
+	border-radius: 8px;
+  	border: solid 2px #54AF97;
+
+	font-size: 27px;
+	font-weight: bold;
+	color: #65b2d0;
+	text-shadow: 0px 0px 10px #54AF97;
+	white-space: nowrap; 
+    text-overflow: ellipsis; 
+}
+/*Summoner Profile*/
+/*Body writing*/
+.test-1-1, .bars .lane-total, .bars #amount-total, .bars .lane-top, .bars #amount-top, .bars .lane-jg, .bars #amount-jg, .bars .lane-mid, .bars #amount-mid, .bars .lane-supp, .bars #amount-supp, .bars .lane-adc, .bars #amount-adc
+{
+	font-size: 18px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+/*1st Section*/
+.test-1-1, .bars .lane-total
+{
+	width:346px;
+	margin-top: 50px;
+	position: absolute;
+}
+#test-summary-profile .test-1-1
+{
+	white-space: nowrap; 
+    text-overflow: ellipsis; 
+}
+#rank-icon
+{
+	width: 40px;
+	margin-left:4px;
+	margin-right:3px;
+	vertical-align: middle;
+}
+#rank, #favorite-champ-points, #nexttomaster-champ-points
+{
+	display:inline-block;
+}
+.separator-1, .separator-2, .separator-3
+{
+	width: 150px;
+	height: 100px;
+	margin-left:100px;
+	position: absolute;
+	border-top-style: solid;
+	border-top: 2px ridge rgba(255,255,255,0.49);
+	border-color: #54AF97;
+}
+.separator-1
+{
+	margin-top: 100px;
+}
+.separator-2
+{
+	margin-top: 238px;
+}
+.separator-3
+{
+	margin-top: 376px;
+}
+/*2nd Section*/
+.test-2
+{
+	width: 350px;
+	height: 100px;
+	margin-top: 120px;
+	position: absolute;
+	text-shadow: 0px 0px 10px #54AF97;
+	font-size: 24px;
+	font-weight: bold;
+	letter-spacing: 1px;
+	color: #65b2d0;
+}
+.test-2-1
+{
+	width: 350px;
+	height: 100px;
+	margin-top: 160px;
+	position: absolute;
+	font-size: 18px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+.profile-grade
+{
+	height: 65px;
+	width: 90px;
+	vertical-align: -50%;
+}
+.test-2-1-text
+{
+	display: inline-block;
+	text-align: left;
+	line-height: 30px;
+}
+#mastery-score, #mastery-avg, #mastery-best-lane-score, #mastery-best-lane-avg
+{
+	color:#80E19F;
+}
+#mastery-score, #mastery-best-lane-score
+{
+	margin-left:21px;
+}
+#mastery-avg, #mastery-best-lane-avg
+{
+	margin-left:15px;
+}
+/*3rd Section*/
+.test-3
+{
+	width: 350px;
+	height: 100px;
+	margin-top: 260px;
+	position: absolute;
+	text-shadow: 0px 0px 10px #54AF97;
+	font-size: 24px;
+	font-weight: bold;
+	letter-spacing: 1px;
+	color: #65b2d0;
+}
+.test-3-1
+{
+	width: 350px;
+	height: 100px;
+	margin-top: 300px;
+	position: absolute;
+	font-size: 18px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+.test-3-1-text
+{
+	display: inline-block;
+	text-align: left;
+	line-height: 30px;
+}
+/*4th Section*/
+.test-4-1
+{
+	width: 350px;
+	height: 100px;
+	margin-top: 392px;
+	position: absolute;
+	font-size: 18px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+.summary-champ-icon
+{
+	height: 50px;
+	width: 50px;
+	margin-left: 15px;
+	margin-right: 15px;
+	border: 3px solid #54AF97;
+	border-radius:8px;
+	vertical-align: -85%;
+}
+/*Champions Mastered*/
+#test-summary-champions
+{
+	background-position: -370px 0%;
+}
+/*1st Section*/
+.bars .lane-total, .bars .lane-top, .bars .lane-jg, .bars .lane-mid, .bars .lane-supp, .bars .lane-adc
+{
+	width: 64px;
+	margin-top: 56px;
+	text-align:right;
+}
+.bars #bar-total, .bars #bar-top, .bars #bar-jg, .bars #bar-mid, .bars #bar-supp, .bars #bar-adc
+{
+	width:180px;
+	display: inline-block;
+	margin-left:-100px;
+	margin-top: 60px;
+	position: absolute;
+}
+.bars #amount-total, .bars #amount-top, .bars #amount-jg, .bars #amount-mid, .bars #amount-supp, .bars #amount-adc
+{
+	display: inline-block;
+	position: absolute;
+	margin-top: 56px;
+	margin-left: 95px;
+
+	text-align:left;
+}
+/*2nd Section*/
+.bars .lane-top, .bars #amount-top
+{
+	position:absolute;
+	margin-top: 118px;
+}
+.bars #bar-top
+{
+	margin-top: 122px;
+}
+.bars .lane-jg, .bars #amount-jg
+{
+	position:absolute;
+	margin-top: 173px;
+}
+.bars #bar-jg
+{
+	margin-top: 177px;
+}
+.bars .lane-mid, .bars #amount-mid
+{
+	position:absolute;
+	margin-top: 228px;
+}
+.bars #bar-mid
+{
+	margin-top: 232px;
+}
+.bars .lane-supp, .bars #amount-supp
+{
+	position:absolute;
+	margin-top: 283px;
+}
+.bars #bar-supp
+{
+	margin-top: 287px;
+}
+.bars .lane-adc, .bars #amount-adc
+{
+	position:absolute;
+	margin-top: 338px;
+}
+.bars #bar-adc
+{
+	margin-top: 342px;
+}
+/*Chests Earned Mastered*/
+#test-summary-chests
+{
+	background-position: -740px 0%;
+}
+
+/*------------------------------------------------------------------------------------------------------
+	STACKED CHART
+------------------------------------------------------------------------------------------------------*/
+.highcharts-title>tspan
+{
+	fill:#628277;
+}
+.highcharts-legend-item>text>tspan
+{
+	fill:#3A6B77;	
+}
+.highcharts-legend-item>text>tspan:hover
+{
+	fill:#87DDC6;
+}
+.highcharts-series >rect
+{
+	rx:4px;
+	ry:4px;
+	stroke-width:0;
+	stroke:#242b31;
+}
+.highcharts-grid>path
+{
+	stroke:#1C3E44;
+}
+.highcharts-axis>path
+{
+	opacity:0;
+}
+
+/*------------------------------------------------------------------------------------------------------
+	DONUT CHART
+------------------------------------------------------------------------------------------------------*/
+.highcharts-series>path
+{
+	stroke: #242B31;
+	stroke-width: 0;	
+}
+#donutChart>div>svg>g.highcharts-series-group>g.highcharts-series>path, #donutChart>div>svg>g.highcharts-data-labels>g>text>tspan, #stackedChart>div>svg>g>g>rect, #stackedChart g.highcharts-legend-item, #champions-table thead>tr>th
+{
+	cursor: pointer;	
+}
+/*------------------------------------------------------------------------------------------------------
+	SECTION - CHAMPIONS
+------------------------------------------------------------------------------------------------------*/
+.dont-break-table
+{
+	min-width:945px;
+	display:inline-block;
+}
+#vertical-text-champions
+{
+	height: 695px;
+}
+#vertical-text-champions>p
+{
+	text-indent: -510px;
+}
+.table-container
+{
+	border: solid 3px #54AF97;
+	border-radius:8px;
+	background-color:#3F586C;
+}
+.table-container select
+{
+	width:5em;
+	outline: none;
+	font-family: sans-serif;
+	font-size: 18px;
+	text-indent: 6%;
+	box-shadow: none;
+	border-radius: 8px;
+	background: url(../img/down_arrow_select.png) no-repeat right #EDFBFD;
+	
+	padding-top: .3em;
+	padding-bottom: .4em;
+	border: solid 3px #54AF97;
+	transition: box-shadow 0.3s, border 0.3s;
+
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+.champ-icon
+{
+	margin-top:4px;
+	height: 40px;
+	width: 40px;
+	border: 3px solid #54AF97;
+	border-radius:8px;
+}
+.chest-not-earned
+{
+	-webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+}
+#champions-table_next
+{
+	margin-left: 4px;
+}
+#champions-table_previous
+{
+	margin-right: -2px;
+}
+
+/*------------------------------------------------------------------------------------------------------
+	Progress Bar 
+------------------------------------------------------------------------------------------------------*/
+.meter
+{ 
+	height: 10px;
+	width: 150px;
+	position: relative;
+	background: #555;
+	-moz-border-radius: 25px;
+	-webkit-border-radius: 25px;
+	border-radius:25px;
+	padding: 3px;
+	-webkit-box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3);
+	-moz-box-shadow   : inset 0 -1px 1px rgba(255,255,255,0.3);
+	box-shadow        : inset 0 -1px 1px rgba(255,255,255,0.3);
+}
+.meter > span
+{
+	display: block;
+	height: 100%;
+	   -webkit-border-top-right-radius: 8px;
+	-webkit-border-bottom-right-radius: 8px;
+		   -moz-border-radius-topright: 8px;
+		-moz-border-radius-bottomright: 8px;
+			   border-top-right-radius: 8px;
+			border-bottom-right-radius: 8px;
+		-webkit-border-top-left-radius: 20px;
+	 -webkit-border-bottom-left-radius: 20px;
+			-moz-border-radius-topleft: 20px;
+		 -moz-border-radius-bottomleft: 20px;
+				border-top-left-radius: 20px;
+			 border-bottom-left-radius: 20px;
+	background-color: rgb(43,194,83);
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, rgb(43,194,83)),	/*change these two for the progress bar colors -- lanes*/
+	  color-stop(1, rgb(84,240,84))
+	 );
+	background-image: -moz-linear-gradient(
+	  center bottom,
+	  rgb(43,194,83) 37%,
+	  rgb(84,240,84) 69%
+	 );
+	-webkit-box-shadow: 
+	  inset 0 2px 9px  rgba(255,255,255,0.3),
+	  inset 0 -2px 6px rgba(0,0,0,0.4);
+	-moz-box-shadow: 
+	  inset 0 2px 9px  rgba(255,255,255,0.3),
+	  inset 0 -2px 6px rgba(0,0,0,0.4);
+	box-shadow: 
+	  inset 0 2px 9px  rgba(255,255,255,0.3),
+	  inset 0 -2px 6px rgba(0,0,0,0.4);
+	position: relative;
+	overflow: hidden;
+}
+.meter > span:after, .animate > span > span
+{
+	content: "";
+	position: absolute;
+	top: 0; left: 0; bottom: 0; right: 0;
+	background-image: 
+	   -webkit-gradient(linear, 0 0, 100% 100%, 
+		  color-stop(.25, rgba(255, 255, 255, .2)), 
+		  color-stop(.25, transparent), color-stop(.5, transparent), 
+		  color-stop(.5, rgba(255, 255, 255, .2)), 
+		  color-stop(.75, rgba(255, 255, 255, .2)), 
+		  color-stop(.75, transparent), to(transparent)
+	   );
+	background-image: 
+		-moz-linear-gradient(
+		  -45deg, 
+		  rgba(255, 255, 255, .2) 25%, 
+		  transparent 25%, 
+		  transparent 50%, 
+		  rgba(255, 255, 255, .2) 50%, 
+		  rgba(255, 255, 255, .2) 75%, 
+		  transparent 75%, 
+		  transparent
+	   );
+	z-index: 1;
+	-webkit-background-size: 50px 50px;
+	-moz-background-size: 50px 50px;
+	-webkit-animation: move 2s linear infinite;
+	   -webkit-border-top-right-radius: 8px;
+	-webkit-border-bottom-right-radius: 8px;
+		   -moz-border-radius-topright: 8px;
+		-moz-border-radius-bottomright: 8px;
+			   border-top-right-radius: 8px;
+			border-bottom-right-radius: 8px;
+		-webkit-border-top-left-radius: 20px;
+	 -webkit-border-bottom-left-radius: 20px;
+			-moz-border-radius-topleft: 20px;
+		 -moz-border-radius-bottomleft: 20px;
+				border-top-left-radius: 20px;
+			 border-bottom-left-radius: 20px;
+	overflow: hidden;
+}
+#test-summary-champions #bar-top>span, #test-summary-champions #bar-jg>span, #test-summary-champions #bar-mid>span, #test-summary-champions #bar-supp>span, #test-summary-champions #bar-adc>span, #test-summary-chests #bar-top>span, #test-summary-chests #bar-jg>span, #test-summary-chests #bar-mid>span, #test-summary-chests #bar-supp>span, #test-summary-chests #bar-adc>span
+{
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0, #287b9b),	/*change these two for the progress bar colors -- lanes*/
+		color-stop(1, #65b2d0)
+	);
+}
+#test-summary-champions #bar-total>span, #test-summary-chests #bar-total>span
+{
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, #6b3293),	/*change these two for the progress bar colors -- Total*/
+	  color-stop(1, #8b95ba)
+	 );
+	 
+	 /*
+	 	  color-stop(0, #8B7500),	
+	  color-stop(1, #CDAD00)
+	*/
+}
+.meter#mastery-5
+{
+	background-color: #3BD11C;
+	box-shadow: 0 0 10px 2px #42E121;
+}
+.meter#mastery-5>span,
+{
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, #90ed7d),	/*change these two for the progress bar colors*/
+	  color-stop(1, #90ed7d)
+	 );
+}
+.meter#mastery-4>span
+{
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, #bfe562),	/*change these two for the progress bar colors*/
+	  color-stop(1, #bfe562)
+	 );
+}
+.meter#mastery-3>span
+{
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, #f8f470),	/*change these two for the progress bar colors*/
+	  color-stop(1, #f8f470)
+	 );
+}
+.meter#mastery-2>span
+{
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, #ffb065),	/*change these two for the progress bar colors*/
+	  color-stop(1, #ffb065)
+	 );
+}
+.meter#mastery-1>span
+{
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, #f46666),	/*change these two for the progress bar colors*/
+	  color-stop(1, #f46666)
+	 );
+}
+.meter#mastery-0>span
+{
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, #848b8b),	/*change these two for the progress bar colors*/
+	  color-stop(1, #848b8b)
+	 );
+}
+.animate > span:after
+{
+	display: none;
+}
+@-webkit-keyframes move
+{
+	0%
+	{
+	   background-position: 0 0;
+	}
+	100%
+	{
+	   background-position: 50px 50px;
+	}
+}
