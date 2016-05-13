@@ -290,6 +290,14 @@ function GetPlatformId(region)
 	{
 		newVal = "la2";
 	}
+	else if (region === "eune")
+	{
+		newVal = "eun1";
+	}
+	else if (region === "oce")
+	{
+		newVal = "oc1";
+	}
 	else
 	{
 		newVal = region + "1";
