@@ -757,12 +757,32 @@ input[type="text"], .table-container input
 	  color-stop(1, #CDAD00)
 	*/
 }
-.meter#mastery-5
+.meter#mastery-7
 {
-	background-color: #3BD11C;
-	box-shadow: 0 0 10px 2px #42E121;
+	background-color: #1FDFD6;
+	box-shadow: 0 0 10px 2px #00FFF9;
 }
-.meter#mastery-5>span,
+.meter#mastery-7>span
+{
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, #4DD0BA),	/*change these two for the progress bar colors*/
+	  color-stop(1, #4DD0BA)
+	 );
+}
+.meter#mastery-6>span
+{
+	background-image: -webkit-gradient(
+	  linear,
+	  left bottom,
+	  left top,
+	  color-stop(0, #C879D1),	/*change these two for the progress bar colors*/
+	  color-stop(1, #C879D1)
+	 );
+}
+.meter#mastery-5>span
 {
 	background-image: -webkit-gradient(
 	  linear,
