@@ -189,6 +189,7 @@ function GetNameAndRegionFromURL()
 					var p_highestChampion_counter = 0;
 					var p_nextChampionToMasterId = 0;
 					var p_nextChampionToMasterPoints = 0;
+					var p_nextChampionToMasterLevel = 12;
 					var p_nextChampionToEarnChest = 0;
 					
 					//store data
@@ -202,12 +203,22 @@ function GetNameAndRegionFromURL()
 						}
 						
 						//keep track of the first champion at level 4 (that's the next champion to master, because it has the highest champion points)
-						if (p_nextChampionToMasterId === 0)
+						if (p_nextChampionToMasterId === 0 || p_nextChampionToMasterLevel < pData[p_champion]["championLevel"])
 						{
 							if (pData[p_champion]["championLevel"] < 7)
 							{
 								p_nextChampionToMasterId = pData[p_champion]["championId"];
-								p_nextChampionToMasterPoints = pData[p_champion]["championPointsUntilNextLevel"];
+								if (pData[p_champion]["championLevel"] >= 5)
+								{
+									if (pData[p_champion]["championLevel"] === 5)
+										p_nextChampionToMasterLevel = 5;
+									else
+										p_nextChampionToMasterLevel = 6;
+
+									p_nextChampionToMasterPoints = pData[p_champion]["tokensEarned"];
+								}
+								else
+									p_nextChampionToMasterPoints = pData[p_champion]["championPointsUntilNextLevel"];
 							}
 						}
 						
@@ -251,7 +262,18 @@ function GetNameAndRegionFromURL()
 						
 						//store next champion to master icon and points inside Summary - Champions Mastered
 						$('#test-summary-champions #nexttomaster-champion').attr("src", "http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/"+ m_data["constants"]["map"][p_nextChampionToMasterId]["icon"] +".png");
-						$('#test-summary-champions #nexttomaster-champ-points').text(p_nextChampionToMasterPoints + " pts left");
+						var p_nextChampToMasterText = "";
+						if (p_nextChampionToMasterLevel >= 5)
+						{
+							var tempNumOfTokens = (p_nextChampionToMasterLevel-3)-p_nextChampionToMasterPoints;
+							if (tempNumOfTokens === 1)
+								p_nextChampToMasterText = tempNumOfTokens + " token left";
+							else
+								p_nextChampToMasterText = tempNumOfTokens + " tokens left";
+						}
+						else
+							p_nextChampToMasterText = p_nextChampionToMasterPoints + " pts left";
+						$('#test-summary-champions #nexttomaster-champ-points').text(p_nextChampToMasterText);
 						
 						//store next champion to earn a chest with inside Summary - Chests Earned
 						$('#test-summary-chests #nexttoearnchest-champion').attr("src", "http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/"+ m_data["constants"]["map"][p_nextChampionToEarnChest]["icon"] +".png");
@@ -1225,7 +1247,7 @@ function CreateChampionsTable()
 			CalculateGrade(m_data["champions"][champion]["championPoints"]),
 			m_data["champions"][champion]["championLevel"],
 			m_data["champions"][champion]["championPoints"],
-			m_data["champions"][champion]["championPointsUntilNextLevel"] + " <div class='meter' id='mastery-"+m_data["champions"][champion]["championLevel"]+"'><span style='width: " + ((m_data["champions"][champion]["championPoints"]/(m_data["champions"][champion]["championPoints"] + m_data["champions"][champion]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
+			((m_data["champions"][champion]["championPointsUntilNextLevel"] === 0 && m_data["champions"][champion]["championLevel"] < 7) ? (m_data["champions"][champion]["championLevel"]-3-m_data["champions"][champion]["tokensEarned"] + " token(s)") : m_data["champions"][champion]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][champion]["championLevel"]+"'><span style='width: " + ((m_data["champions"][champion]["championPoints"]/(m_data["champions"][champion]["championPoints"] + m_data["champions"][champion]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
 			
 			
 		];
@@ -1285,7 +1307,7 @@ function RefreshChampionsTable()
 						CalculateGrade(m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"]),
 						m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championLevel"],
 						m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"],
-						m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"] + " <div class='meter' id='mastery-"+m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championLevel"]+"'><span style='width: " + ((m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"]/(m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"] + m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
+						((m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"] === 0 && m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championLevel"] < 7) ? (m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championLevel"]-3-m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["tokensEarned"] + " token(s)") : m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championLevel"]+"'><span style='width: " + ((m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"]/(m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"] + m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
 					];
 										
 					p_data.push(p_champ);
@@ -1335,7 +1357,7 @@ function RefreshChampionsTable()
 					CalculateGrade(m_data["champions"][champion]["championPoints"]),
 					m_data["champions"][champion]["championLevel"],
 					m_data["champions"][champion]["championPoints"],
-					m_data["champions"][champion]["championPointsUntilNextLevel"] + " <div class='meter' id='mastery-"+m_data["champions"][champion]["championLevel"]+"'><span style='width: " + ((m_data["champions"][champion]["championPoints"]/(m_data["champions"][champion]["championPoints"] + m_data["champions"][champion]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
+					((m_data["champions"][champion]["championPointsUntilNextLevel"] === 0 && m_data["champions"][champion]["championLevel"] < 7) ? (m_data["champions"][champion]["championLevel"]-3-m_data["champions"][champion]["tokensEarned"] + " token(s)") : m_data["champions"][champion]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][champion]["championLevel"]+"'><span style='width: " + ((m_data["champions"][champion]["championPoints"]/(m_data["champions"][champion]["championPoints"] + m_data["champions"][champion]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
 				];
 				p_data.push(p_champ);
 			}
@@ -1356,7 +1378,7 @@ function RefreshChampionsTable()
 					CalculateGrade(m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"]),
 					m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championLevel"],
 					m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"],
-					m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"] + " <div class='meter' id='mastery-"+m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championLevel"]+"'><span style='width: " + ((m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"]/(m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"] + m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
+					((m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"] === 0 && m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championLevel"] < 7) ? (m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championLevel"]-3-m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["tokensEarned"] + " token(s)") : m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championLevel"]+"'><span style='width: " + ((m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"]/(m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"] + m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
 					
 					
 				];
@@ -1406,7 +1428,7 @@ function RefreshChampionsTable()
 						CalculateGrade(m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"]),
 						m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championLevel"],
 						m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"],
-						m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPointsUntilNextLevel"] + " <div class='meter' id='mastery-"+m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championLevel"]+"'><span style='width: " + ((m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"]/(m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"] + m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
+						((m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPointsUntilNextLevel"] === 0 && m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championLevel"] < 7) ? (m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championLevel"]-3-m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["tokensEarned"] + " token(s)") : m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championLevel"]+"'><span style='width: " + ((m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"]/(m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"] + m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
 					];
 							
 					p_data.push(p_champ);
