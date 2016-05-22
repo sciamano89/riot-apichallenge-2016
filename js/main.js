@@ -21,6 +21,7 @@ m_data["selection"] = Array();
 m_data["champions"] = Array();
 
 //setup riot's constants
+m_patch = "6.10.1";
 m_data["constants"] = ["top", "jg", "mid", "supp", "adc", "map"];
 m_data["constants"]["top"]  = ["primary", "secondary"];
 m_data["constants"]["jg"]  = ["primary", "secondary"];
@@ -29,7 +30,7 @@ m_data["constants"]["supp"]  = ["primary", "secondary"];
 m_data["constants"]["adc"]  = ["primary", "secondary"];
 m_data["constants"]["top"]["primary"] = [266, 31, 122, 36, 245, 114, 41, 86, 150, 420, 39, 126, 85, 54, 62, 75, 111, 2, 80, 78, 58, 92, 68, 13, 98, 27, 14, 17, 48, 23, 6, 8, 106, 83];
 m_data["constants"]["jg"]["primary"] = [32, 60, 28, 9, 79, 120, 59, 24, 121, 203, 64, 57, 11, 76, 56, 20, 33, 421, 107, 113, 35, 102, 72, 77, 254, 19, 5, 154];
-m_data["constants"]["mid"]["primary"] = [103, 84, 34, 1, 136, 268, 63, 69, 131, 105, 3, 74, 30, 38, 55, 10, 7, 127, 99, 90, 61, 50, 134, 91, 4, 45, 161, 112, 101, 157, 238, 115];
+m_data["constants"]["mid"]["primary"] = [103, 84, 34, 1, 136, 268, 63, 69, 131, 105, 3, 74, 30, 38, 55, 10, 7, 127, 99, 90, 61, 50, 134, 163, 91, 4, 45, 161, 112, 101, 157, 238, 115];
 m_data["constants"]["supp"]["primary"] = [12, 432, 53, 201, 40, 43, 89, 117, 25, 267, 37, 16, 223, 44, 412, 26, 143];
 m_data["constants"]["adc"]["primary"] = [22, 51, 42, 119, 81, 104, 202, 222, 429, 96, 236, 21, 82, 133, 15, 18, 29, 110, 67];
 /*------------------------------------------------------------------------------------------------------
@@ -167,7 +168,7 @@ function GetNameAndRegionFromURL()
 					catch (e)
 					{
 						$('#loading-section').addClass('section-hidden');
-						p_message = "Sorry about that. There was an error retrieving Mastery information from Riot. Please report this error to rai@rprevidi.com";
+						p_message = "Sorry about that. There was an error retrieving Mastery information from Riot. Please report this error to contact@masteryprofiler.com";
 						DisplayError(p_message);
 						return;
 					}
@@ -203,7 +204,7 @@ function GetNameAndRegionFromURL()
 						//keep track of the first champion at level 4 (that's the next champion to master, because it has the highest champion points)
 						if (p_nextChampionToMasterId === 0)
 						{
-							if (pData[p_champion]["championLevel"] < 5)
+							if (pData[p_champion]["championLevel"] < 7)
 							{
 								p_nextChampionToMasterId = pData[p_champion]["championId"];
 								p_nextChampionToMasterPoints = pData[p_champion]["championPointsUntilNextLevel"];
@@ -229,7 +230,7 @@ function GetNameAndRegionFromURL()
 					console.log ("retrieved mastery data based on region and summoner id");
 					
 					//retrieve static data from API (champion names and icon names)
-					$.get("http://ddragon.leagueoflegends.com/cdn/6.9.1/data/en_US/champion.json", function(p_data){		
+					$.get("http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/data/en_US/champion.json", function(p_data){		
 						for (p_champion in p_data["data"])
 						{
 							var p_champData = Array();
@@ -245,15 +246,15 @@ function GetNameAndRegionFromURL()
 						console.log ("retrieved all champion names and icon names");			
 						
 						//store highest champion icon and points inside Summary - Summoner Profile
-						$('#test-summary-profile #favorite-champion').attr("src", "http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/"+ m_data["constants"]["map"][p_n1ChampId]["icon"] +".png");
+						$('#test-summary-profile #favorite-champion').attr("src", "http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/"+ m_data["constants"]["map"][p_n1ChampId]["icon"] +".png");
 						$('#test-summary-profile #favorite-champ-points').text(kFormatter(p_n1ChampPoints) + " pts");
 						
 						//store next champion to master icon and points inside Summary - Champions Mastered
-						$('#test-summary-champions #nexttomaster-champion').attr("src", "http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/"+ m_data["constants"]["map"][p_nextChampionToMasterId]["icon"] +".png");
+						$('#test-summary-champions #nexttomaster-champion').attr("src", "http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/"+ m_data["constants"]["map"][p_nextChampionToMasterId]["icon"] +".png");
 						$('#test-summary-champions #nexttomaster-champ-points').text(p_nextChampionToMasterPoints + " pts left");
 						
 						//store next champion to earn a chest with inside Summary - Chests Earned
-						$('#test-summary-chests #nexttoearnchest-champion').attr("src", "http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/"+ m_data["constants"]["map"][p_nextChampionToEarnChest]["icon"] +".png");
+						$('#test-summary-chests #nexttoearnchest-champion').attr("src", "http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/"+ m_data["constants"]["map"][p_nextChampionToEarnChest]["icon"] +".png");
 						
 						//create first selection
 						m_data["selection"]["lane"] = "all";
@@ -309,13 +310,13 @@ function GetPlatformId(region)
 function CalculateMMSPL(lane, group)
 {
 	if (lane !== "all")
-		return (5 * m_data["constants"][lane][group].length);
+		return (7 * m_data["constants"][lane][group].length);
 	else
 	{		
 		var pSum = 0;
 		for (pLane in m_data["stacked"]) //use stack instead of constants, because constants includes "map"
 		{
-			pSum += (5 * m_data["constants"][pLane][group].length);
+			pSum += (7 * m_data["constants"][pLane][group].length);
 		}
 		return pSum;
 	}
@@ -346,7 +347,7 @@ function CalculateMasteryScoreOrNumOfChampions(lane, group, plevel, numOfChampio
 			for (plane in m_data["stacked"])
 			{	
 				var p_count = 0;
-				for (var x=0; x<5; ++x)
+				for (var x=0; x<7; ++x)
 				{
 					p_count += m_data["stacked"][plane][x].length;
 				}
@@ -367,7 +368,7 @@ function CalculateMasteryScoreOrNumOfChampions(lane, group, plevel, numOfChampio
 		else	//if lvl is 0, subtracts the # of champs in that lane user owns from the total # of champs in that lane
 		{
 			var p_count = 0;
-			for (var x=0; x<5; ++x)
+			for (var x=0; x<7; ++x)
 				p_count += m_data["stacked"][lane][x].length;
 			return (m_data["constants"][lane][group].length - p_count);
 		}
@@ -561,7 +562,7 @@ function CreateDataForStackedChart()
 	var p_supp = [0,1,2,3,4];
 	var p_adc = [0,1,2,3,4];
 	
-	for (var i=0; i<5; ++i)
+	for (var i=0; i<7; ++i)
 	{
 		p_top[i] = new Array();
 		p_jg[i] = new Array();
@@ -582,7 +583,16 @@ function CreateDataForStackedChart()
 		}
 		else if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["mid"]["primary"]) >=0 )
 		{
-			p_mid[((m_data["champions"][pChamp]["championLevel"])-1)].push(m_data["champions"][pChamp]["championId"]);
+			try
+			{
+				p_mid[((m_data["champions"][pChamp]["championLevel"])-1)].push(m_data["champions"][pChamp]["championId"]);
+			}
+			catch(e)
+			{
+				$('#loading-section').addClass('section-hidden');
+				var p_message = "Ritoplz, update your API to include Taliyah!";
+				DisplayError(p_message);
+			}
 		}
 		else if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["supp"]["primary"]) >=0 )
 		{
@@ -635,7 +645,7 @@ function CreateLaneGrades()
 		var p_lanePoints = 0;
 		var count = 0;
 		
-		for (var level=0; level<5; ++level)
+		for (var level=0; level<7; ++level)
 		{
 			for (champ in m_data["stacked"][lane][level])
 			{				
@@ -666,7 +676,7 @@ function CreateLaneGrades()
 	//calculate and store data
 	p_bestLane_score = CalculateMasteryScore(p_bestLane, "primary", false);
 	var masteryScore = CalculateMasteryScore("all", "primary", false);
-	var totalNumberOfChampions = (CalculateMMSPL("all", "primary")/5);
+	var totalNumberOfChampions = (CalculateMMSPL("all", "primary")/7);
 	
 	//insert grades under the stacked chart
 	$('#grades-container').append(p_gradesHTML);
@@ -682,15 +692,15 @@ function CreateLaneGrades()
 	
 	//insert data in Summary - Champions Mastered & Chests Earned
 	//total
-	$('#test-summary-champions #amount-total').text((m_data["stacked"]["top"][4].length + m_data["stacked"]["jg"][4].length +m_data["stacked"]["mid"][4].length +m_data["stacked"]["supp"][4].length +m_data["stacked"]["adc"][4].length) + "/" + (CalculateMMSPL("all", "primary")/5));
-	$('#test-summary-champions #bar-total>span').width((((m_data["stacked"]["top"][4].length + m_data["stacked"]["jg"][4].length +m_data["stacked"]["mid"][4].length +m_data["stacked"]["supp"][4].length +m_data["stacked"]["adc"][4].length)/(CalculateMMSPL("all", "primary")/5)) * 100).toString() + "%");
-	$('#test-summary-chests #amount-total').text(m_chestsEarned.length + "/" + (CalculateMMSPL("all", "primary")/5));
-	$('#test-summary-chests #bar-total>span').width(((m_chestsEarned.length/(CalculateMMSPL("all", "primary")/5)) * 100).toString() + "%");
+	$('#test-summary-champions #amount-total').text((m_data["stacked"]["top"][6].length + m_data["stacked"]["jg"][6].length +m_data["stacked"]["mid"][6].length +m_data["stacked"]["supp"][6].length +m_data["stacked"]["adc"][6].length) + "/" + (CalculateMMSPL("all", "primary")/7));
+	$('#test-summary-champions #bar-total>span').width((((m_data["stacked"]["top"][6].length + m_data["stacked"]["jg"][6].length +m_data["stacked"]["mid"][6].length +m_data["stacked"]["supp"][6].length +m_data["stacked"]["adc"][6].length)/(CalculateMMSPL("all", "primary")/7)) * 100).toString() + "%");
+	$('#test-summary-chests #amount-total').text(m_chestsEarned.length + "/" + (CalculateMMSPL("all", "primary")/7));
+	$('#test-summary-chests #bar-total>span').width(((m_chestsEarned.length/(CalculateMMSPL("all", "primary")/7)) * 100).toString() + "%");
 	//all other lanes
 	for (pLane in m_data["stacked"])
 	{
-		$('#test-summary-champions #amount-'+ pLane).text(m_data["stacked"][pLane][4].length + "/" + m_data["constants"][pLane]["primary"].length);
-		$('#test-summary-champions #bar-'+ pLane +'>span').width(((m_data["stacked"][pLane][4].length /m_data["constants"][pLane]["primary"].length ) * 100).toString() + "%");
+		$('#test-summary-champions #amount-'+ pLane).text(m_data["stacked"][pLane][6].length + "/" + m_data["constants"][pLane]["primary"].length);
+		$('#test-summary-champions #bar-'+ pLane +'>span').width(((m_data["stacked"][pLane][6].length /m_data["constants"][pLane]["primary"].length ) * 100).toString() + "%");
 		
 		var chestCounter = 0;
 		for (pChamp in m_chestsEarned)
@@ -735,6 +745,14 @@ function CalculateStackedData(level, group, numOfChampions)
 function CalculateDonutData(lane, group, numOfChampions)
 {
 	return [
+			[
+				"Mastery lvl 7",
+				CalculateMasteryScoreOrNumOfChampions(lane, group, 7, numOfChampions)
+			],
+			[
+				"Mastery lvl 6",
+				CalculateMasteryScoreOrNumOfChampions(lane, group, 6, numOfChampions)
+			],
 			[
 				"Mastery lvl 5",
 				CalculateMasteryScoreOrNumOfChampions(lane, group, 5, numOfChampions)
@@ -981,6 +999,60 @@ function GetStackedChartOptions(group, numOfChampions)
 						CalculateMasteryScoreOrNumOfChampions("adc", group, 5, numOfChampions)
 					]
 				]
+			},
+			{
+				"color": "#C879D1",
+				"index": 5,
+				"name": "Mastery lvl 6",
+				"data": [
+					[
+						"Top",
+						CalculateMasteryScoreOrNumOfChampions("top", group, 6, numOfChampions)
+					],
+					[
+						"Jungle",
+						CalculateMasteryScoreOrNumOfChampions("jg", group, 6, numOfChampions)
+					],
+					[
+						"Mid",
+						CalculateMasteryScoreOrNumOfChampions("mid", group, 6, numOfChampions)
+					],
+					[
+						"Support",
+						CalculateMasteryScoreOrNumOfChampions("supp", group, 6, numOfChampions)
+					],
+					[
+						"ADC",
+						CalculateMasteryScoreOrNumOfChampions("adc", group, 6, numOfChampions)
+					]
+				]
+			},
+			{
+				"color": "#4DD0BA",
+				"index": 6,
+				"name": "Mastery lvl 7",
+				"data": [
+					[
+						"Top",
+						CalculateMasteryScoreOrNumOfChampions("top", group, 7, numOfChampions)
+					],
+					[
+						"Jungle",
+						CalculateMasteryScoreOrNumOfChampions("jg", group, 7, numOfChampions)
+					],
+					[
+						"Mid",
+						CalculateMasteryScoreOrNumOfChampions("mid", group, 7, numOfChampions)
+					],
+					[
+						"Support",
+						CalculateMasteryScoreOrNumOfChampions("supp", group, 7, numOfChampions)
+					],
+					[
+						"ADC",
+						CalculateMasteryScoreOrNumOfChampions("adc", group, 7, numOfChampions)
+					]
+				]
 			}
 		]
 	};
@@ -1045,6 +1117,8 @@ function GetDonutChartOptions(lane, group, numOfChampions)
 			{
 				"index": 0,
 				"colors": [
+					"#4DD0BA",
+					"#C879D1",
 					"#90ed7d",
 					"#bfe562",
 					"#f8f470",
@@ -1145,7 +1219,7 @@ function CreateChampionsTable()
 	{
 		var p_champ = Array();
 		p_champ = [
-			"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/" + m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["icon"] + ".png'/>",
+			"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["icon"] + ".png'/>",
 			m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["name"],
 			(m_data["champions"][champion]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
 			CalculateGrade(m_data["champions"][champion]["championPoints"]),
@@ -1205,7 +1279,7 @@ function RefreshChampionsTable()
 					var p_champ = Array();
 					
 					p_champ = [
-						"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/" + m_data["constants"]["map"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["icon"] + ".png'/>",
+						"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["icon"] + ".png'/>",
 						m_data["constants"]["map"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["name"],
 						(m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
 						CalculateGrade(m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"]),
@@ -1235,7 +1309,7 @@ function RefreshChampionsTable()
 						var p_champ = Array();
 	
 						p_champ = [
-							"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/" + m_data["constants"]["map"][m_data["constants"][lane][p_currSelectedGroup][pChamp]]["icon"] + ".png'/>",
+							"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["constants"][lane][p_currSelectedGroup][pChamp]]["icon"] + ".png'/>",
 							m_data["constants"]["map"][m_data["constants"][lane][p_currSelectedGroup][pChamp]]["name"],
 							"<img id='chest' src='img/chest.png' class='chest-not-earned'/>",
 							"F",
@@ -1255,7 +1329,7 @@ function RefreshChampionsTable()
 			{
 				var p_champ = Array();
 				p_champ = [
-					"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/" + m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["icon"] + ".png'/>",
+					"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["icon"] + ".png'/>",
 					m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["name"],
 					(m_data["champions"][champion]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
 					CalculateGrade(m_data["champions"][champion]["championPoints"]),
@@ -1276,7 +1350,7 @@ function RefreshChampionsTable()
 				var p_champ = Array();
 				
 				p_champ = [
-					"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/" + m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["icon"] + ".png'/>",
+					"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["icon"] + ".png'/>",
 					m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["name"],
 					(m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
 					CalculateGrade(m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"]),
@@ -1304,7 +1378,7 @@ function RefreshChampionsTable()
 					var p_champ = Array();
 
 					p_champ = [
-						"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/" + m_data["constants"]["map"][m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]]["icon"] + ".png'/>",
+						"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]]["icon"] + ".png'/>",
 						m_data["constants"]["map"][m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]]["name"],
 						"<img id='chest' src='img/chest.png' class='chest-not-earned'/>",
 						"F",
@@ -1319,14 +1393,14 @@ function RefreshChampionsTable()
 		}
 		else	//all levels
 		{
-			for (var level=0; level<5; ++level)
+			for (var level=0; level<7; ++level)
 			{
 				for (champ in m_data["stacked"][p_currSelectedLane][level])
 				{
 					var p_champ = Array();
 					
 					p_champ = [
-						"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/" + m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][level][champ]]["icon"] + ".png'/>",
+						"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][level][champ]]["icon"] + ".png'/>",
 						m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][level][champ]]["name"],
 						(m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
 						CalculateGrade(m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"]),
