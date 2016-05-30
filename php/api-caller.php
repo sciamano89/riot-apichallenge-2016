@@ -83,7 +83,7 @@
 				}
 				else
 				{
-					echo "I just don't know what's going on. lol";
+					echo "Either you lost your internet connection or the server is busy :( Please try again in a little bit.";
 				}
 			}
 		}
