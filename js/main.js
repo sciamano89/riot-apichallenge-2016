@@ -191,6 +191,7 @@ function GetNameAndRegionFromURL()
 					var p_nextChampionToMasterPoints = 0;
 					var p_nextChampionToMasterLevel = 12;
 					var p_nextChampionToEarnChest = 0;
+					var p_is5orHigher = false;
 					
 					//store data
 					for (p_champion in pData)
@@ -202,19 +203,16 @@ function GetNameAndRegionFromURL()
 							p_n1ChampPoints = pData[p_champion]["championPoints"];
 						}
 						
-						//keep track of the first champion at level 4 (that's the next champion to master, because it has the highest champion points)
-						if (p_nextChampionToMasterId === 0 || p_nextChampionToMasterLevel < pData[p_champion]["championLevel"])
+						//if first champion (highest champ pts) OR savedLevel < this champs Level OR we have at least 1 champ that's lvl 5 and savedPts/Tokens < this champ's tokens
+						if (p_nextChampionToMasterId === 0 || p_nextChampionToMasterLevel < pData[p_champion]["championLevel"] || (p_is5orHigher === true && p_nextChampionToMasterPoints < pData[p_champion]["tokensEarned"]))
 						{
 							if (pData[p_champion]["championLevel"] < 7)
 							{
 								p_nextChampionToMasterId = pData[p_champion]["championId"];
+								p_nextChampionToMasterLevel = pData[p_champion]["championLevel"];
 								if (pData[p_champion]["championLevel"] >= 5)
 								{
-									if (pData[p_champion]["championLevel"] === 5)
-										p_nextChampionToMasterLevel = 5;
-									else
-										p_nextChampionToMasterLevel = 6;
-
+									p_is5orHigher = true;
 									p_nextChampionToMasterPoints = pData[p_champion]["tokensEarned"];
 								}
 								else
