@@ -1124,7 +1124,7 @@ function GetDonutChartOptions(lane, group, numOfChampions)
 			"#91e8e1"
 		],
 		"title": {
-			"text": "Champion's Mastery: All Lanes",
+			"text": "Champions' Mastery: All Lanes",
 		},
 		"credits": {
 			"enabled": false
@@ -1230,44 +1230,135 @@ function CreateDonutChart(lane, group, numOfChampions)
 	m_donutChart = new Highcharts.Chart("donutChart", GetDonutChartOptions(lane, group, numOfChampions));
 }
 
+//all lanes, all mastery levels
 function CreateChampionsTable()
 {
 	var p_data = Array();
-		
+	var p_currSelectedGroup = m_data["selection"]["group"];
+
 	//put data in new array
 	for (champion in m_data["champions"])
+		p_data.push(CreateDataTableRow(champion));
+	//adds level 0's too
+	for (lane in m_data["stacked"])
 	{
-		var p_champ = Array();
-		p_champ = [
-			"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["icon"] + ".png'/>",
-			m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["name"],
-			(m_data["champions"][champion]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
-			CalculateGrade(m_data["champions"][champion]["championPoints"]),
-			m_data["champions"][champion]["championLevel"],
-			m_data["champions"][champion]["championPoints"],
-			((m_data["champions"][champion]["championPointsUntilNextLevel"] === 0 && m_data["champions"][champion]["championLevel"] < 7) ? (m_data["champions"][champion]["championLevel"]-3-m_data["champions"][champion]["tokensEarned"] + " token(s)") : m_data["champions"][champion]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][champion]["championLevel"]+"'><span style='width: " + ((m_data["champions"][champion]["championPoints"]/(m_data["champions"][champion]["championPoints"] + m_data["champions"][champion]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
-			
-			
-		];
-		p_data.push(p_champ);
+		//console.log(m_data["champions"]);
+		for (pChamp in m_data["constants"][lane][p_currSelectedGroup])
+		{
+			//add champion if it's not in the list
+			if (m_data["champions"][m_data["constants"][lane][p_currSelectedGroup][pChamp]] == undefined )
+				p_data.push(CreateEmptyDataTableRow(m_data["constants"][lane][p_currSelectedGroup][pChamp]));
+		}
 	}
-	
+
 	//create table
 	m_championsTable = $('#champions-table').DataTable( {
         data: p_data,
-		order: [[ 5, "asc" ]],
+		order: [[5, "asc"]],
         columns: [
             { title: "Icon", "iDataSort": 1 },
             { title: "Name" },
             { title: "Chest", "sType": "chest-earned" },
             { title: "Grade", "sType": "grade" },
-            { title: "Level" , "sType": "invert" },
+            { title: "Level", "sType": "level" },
             { title: "Pts" , "sType": "invert" },
             { title: "Pts to Next lvl" , "sType": "progress" }
         ]
     } );
+	
+	m_championsTable.order([4, "asc"]).draw();
 }
 
+//helper function: creates a row for the Champions table
+function CreateDataTableRow(champion)
+{
+	var p_champ = Array();
+	var p_icon, p_name, p_chest, p_grade, p_level, p_pts, p_ptsLeftString;
+	var p_ptsLeft, p_tokens, p_usesTokens;
+	
+	p_icon = "<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["icon"] + ".png'/>";
+	p_name = m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["name"];
+	p_chest = m_data["champions"][champion]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>";
+	p_level = m_data["champions"][champion]["championLevel"];
+	p_pts = m_data["champions"][champion]["championPoints"];
+	p_grade = CalculateGrade(p_pts);
+	p_tokens = m_data["champions"][champion]["tokensEarned"];
+	p_ptsLeft = m_data["champions"][champion]["championPointsUntilNextLevel"];
+	p_usesTokens = (p_ptsLeft === 0 && p_level < 7) ? true : false;
+	if (p_ptsLeft === 0 && p_level === 7)
+	{
+		p_ptsLeftString = " <div class='meter' id='mastery-"+p_level+"' data-amount='"+p_pts+"'><span style='width:100%'>"+
+		"</span></div>";
+	}
+	else
+	{
+		p_ptsLeftString = p_usesTokens ? DisplayTokens(p_level,p_tokens) : p_ptsLeft + " <div class='meter' id='mastery-"+p_level+"' data-amount='"+p_pts+"'><span style='width: " + ((p_pts / (p_pts + p_ptsLeft)) * 100) + "%'>"+
+		"</span></div>";
+	}
+	
+	p_champ = [p_icon, p_name, p_chest, p_grade, "<div data-progress='"+(p_level+TokenToProgress(p_level,p_tokens))+"'>"+p_level+"</div>", p_pts, p_ptsLeftString];			
+	return p_champ;
+}
+
+//helper function: creates an empty row for the Champions table (for mastery level 0)
+function CreateEmptyDataTableRow(champion)
+{
+	var p_champ = Array();
+
+	p_champ = [
+		"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][champion]["icon"] + ".png'/>",
+		m_data["constants"]["map"][champion]["name"],
+		"<img id='chest' src='img/chest.png' class='chest-not-earned'/>",
+		"F",
+		"<div data-progress='0'>"+0+"</div>",
+		0,
+		1 + " <div class='meter' data-amount='0'><span style='width: 0%'></span></div>"
+	];
+
+	return p_champ;
+}
+//helper function: displays the appropriate amount of tokens depending on the mastery level and the number of tokens earned
+function DisplayTokens(level, count)
+{
+	var p_string = "";
+	var p_max = level-3;
+	
+	//create earned tokens
+	for (var p_i=0; p_i<count; ++p_i)
+		p_string += "<img class='token' src='img/token_" + level + ".png'/>";
+
+	//create not earned tokens
+	for (var p_i2=0; p_i2<p_max-count; ++p_i2)
+		p_string += "<img class='token-not-earned' src='img/token_" + level + ".png'/>";
+	
+	return p_string + " <div class='meter' id='mastery-"+level+"' data-amount='"+TokenToPts(level,p_max-count)+"'><span style='width: 100%'>"+
+	"</span></div>";
+}
+
+//helper function: converts tokens not-earned to points, so that the DataTable can sort it.
+function TokenToPts(level, count)
+{
+	var result = 0;
+	if (level === 5)
+		result += (count * 10000) + 30000;
+	else if (level === 6)
+		result += (count * 10000) + 60000;
+	else if (level === 7)
+		result += 100000;
+		
+	return result;
+}
+//helper function: converts tokens earned to progress points, so that the DataTable can sort it when sorting by Level.
+function TokenToProgress(level, count)
+{
+	var result = 0;
+	if (count > 0)
+	{
+		if (level === 5 || level === 6)
+			result += count * 0.1;
+	}
+	return result;
+}
 //------------------------------------------------------------------------------------------------------
 //refresh sections
 //------------------------------------------------------------------------------------------------------
@@ -1279,6 +1370,8 @@ function RefreshDonutChart()
 function RefreshChampionsTable()
 {
 	var p_data = Array();
+	var p_icon, p_name, p_chest, p_grade, p_level, p_pts, p_ptsLeftString;
+	var p_ptsLeft, p_tokens, p_usesTokens;
 	var p_currSelectedLane = m_data["selection"]["lane"];
 	var p_currSelectedLevel = Number(m_data["selection"]["level"]);
 	var p_currSelectedGroup = m_data["selection"]["group"];
@@ -1295,21 +1388,7 @@ function RefreshChampionsTable()
 			for (lane in m_data["stacked"])
 			{
 				for (champ in m_data["stacked"][lane][p_currSelectedLevel-1])
-				{
-					var p_champ = Array();
-					
-					p_champ = [
-						"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["icon"] + ".png'/>",
-						m_data["constants"]["map"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["name"],
-						(m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
-						CalculateGrade(m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"]),
-						m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championLevel"],
-						m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"],
-						((m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"] === 0 && m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championLevel"] < 7) ? (m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championLevel"]-3-m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["tokensEarned"] + " token(s)") : m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championLevel"]+"'><span style='width: " + ((m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"]/(m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPoints"] + m_data["champions"][m_data["stacked"][lane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
-					];
-										
-					p_data.push(p_champ);
-				}
+					p_data.push(CreateDataTableRow(m_data["stacked"][lane][p_currSelectedLevel-1][champ]));
 			}
 		}
 		else if (p_currSelectedLevel === 0)	//no mastery 
@@ -1319,45 +1398,26 @@ function RefreshChampionsTable()
 				//console.log(m_data["champions"]);
 				for (pChamp in m_data["constants"][lane][p_currSelectedGroup])
 				{
-					
 					//add champion if it's not in the list
-					if (m_data["champions"][m_data["constants"][lane][p_currSelectedGroup][pChamp]] != undefined )
-					{
-					}
-					else
-					{
-						var p_champ = Array();
-	
-						p_champ = [
-							"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["constants"][lane][p_currSelectedGroup][pChamp]]["icon"] + ".png'/>",
-							m_data["constants"]["map"][m_data["constants"][lane][p_currSelectedGroup][pChamp]]["name"],
-							"<img id='chest' src='img/chest.png' class='chest-not-earned'/>",
-							"F",
-							0,
-							0,
-							1 + " <div class='meter'><span style='width: 0%'></span></div>"
-						];
-								
-						p_data.push(p_champ);
-					}
+					if (m_data["champions"][m_data["constants"][lane][p_currSelectedGroup][pChamp]] == undefined )
+						p_data.push(CreateEmptyDataTableRow(m_data["constants"][lane][p_currSelectedGroup][pChamp]));
 				}
 			}
 		}
 		else	//if -1 level
 		{
 			for (champion in m_data["champions"])
+				p_data.push(CreateDataTableRow(champion));
+			//adds level 0's too
+			for (lane in m_data["stacked"])
 			{
-				var p_champ = Array();
-				p_champ = [
-					"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["icon"] + ".png'/>",
-					m_data["constants"]["map"][m_data["champions"][champion]["championId"]]["name"],
-					(m_data["champions"][champion]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
-					CalculateGrade(m_data["champions"][champion]["championPoints"]),
-					m_data["champions"][champion]["championLevel"],
-					m_data["champions"][champion]["championPoints"],
-					((m_data["champions"][champion]["championPointsUntilNextLevel"] === 0 && m_data["champions"][champion]["championLevel"] < 7) ? (m_data["champions"][champion]["championLevel"]-3-m_data["champions"][champion]["tokensEarned"] + " token(s)") : m_data["champions"][champion]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][champion]["championLevel"]+"'><span style='width: " + ((m_data["champions"][champion]["championPoints"]/(m_data["champions"][champion]["championPoints"] + m_data["champions"][champion]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
-				];
-				p_data.push(p_champ);
+				//console.log(m_data["champions"]);
+				for (pChamp in m_data["constants"][lane][p_currSelectedGroup])
+				{
+					//add champion if it's not in the list
+					if (m_data["champions"][m_data["constants"][lane][p_currSelectedGroup][pChamp]] == undefined )
+						p_data.push(CreateEmptyDataTableRow(m_data["constants"][lane][p_currSelectedGroup][pChamp]));
+				}
 			}
 		}
 	}
@@ -1366,49 +1426,15 @@ function RefreshChampionsTable()
 		if (p_currSelectedLevel > 0)
 		{
 			for (champ in m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1])
-			{
-				var p_champ = Array();
-				
-				p_champ = [
-					"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["icon"] + ".png'/>",
-					m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["name"],
-					(m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
-					CalculateGrade(m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"]),
-					m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championLevel"],
-					m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"],
-					((m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"] === 0 && m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championLevel"] < 7) ? (m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championLevel"]-3-m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["tokensEarned"] + " token(s)") : m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championLevel"]+"'><span style='width: " + ((m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"]/(m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPoints"] + m_data["champions"][m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
-					
-					
-				];
-	
-				p_data.push(p_champ);
-			}
+				p_data.push(CreateDataTableRow(m_data["stacked"][p_currSelectedLane][p_currSelectedLevel-1][champ]));	
 		}
 		else if (p_currSelectedLevel === 0)	//no mastery 
 		{
 			for (pChamp in m_data["constants"][p_currSelectedLane][p_currSelectedGroup])
 			{
-				
 				//add champion if it's not in the list
-				if (m_data["champions"][m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]] != undefined )
-				{
-				}
-				else
-				{
-					var p_champ = Array();
-
-					p_champ = [
-						"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]]["icon"] + ".png'/>",
-						m_data["constants"]["map"][m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]]["name"],
-						"<img id='chest' src='img/chest.png' class='chest-not-earned'/>",
-						"F",
-						0,
-						0,
-						1 + " <div class='meter'><span style='width: 0%'></span></div>"
-					];
-							
-					p_data.push(p_champ);
-				}
+				if (m_data["champions"][m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]] == undefined)							
+					p_data.push(CreateEmptyDataTableRow(m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]));
 			}
 		}
 		else	//all levels
@@ -1416,21 +1442,14 @@ function RefreshChampionsTable()
 			for (var level=0; level<7; ++level)
 			{
 				for (champ in m_data["stacked"][p_currSelectedLane][level])
-				{
-					var p_champ = Array();
-					
-					p_champ = [
-						"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][level][champ]]["icon"] + ".png'/>",
-						m_data["constants"]["map"][m_data["stacked"][p_currSelectedLane][level][champ]]["name"],
-						(m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["chestGranted"] === true ? "<img id='chest' src='img/chest.png'/>" : "<img id='chest' src='img/chest.png' class='chest-not-earned'/>"),
-						CalculateGrade(m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"]),
-						m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championLevel"],
-						m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"],
-						((m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPointsUntilNextLevel"] === 0 && m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championLevel"] < 7) ? (m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championLevel"]-3-m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["tokensEarned"] + " token(s)") : m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPointsUntilNextLevel"]) + " <div class='meter' id='mastery-"+m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championLevel"]+"'><span style='width: " + ((m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"]/(m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPoints"] + m_data["champions"][m_data["stacked"][p_currSelectedLane][level][champ]]["championPointsUntilNextLevel"])) * 100) + "%'></span></div>"
-					];
-							
-					p_data.push(p_champ);
-				}
+					p_data.push(CreateDataTableRow(m_data["stacked"][p_currSelectedLane][level][champ]));	
+			}
+			//adds level 0's too
+			for (pChamp in m_data["constants"][p_currSelectedLane][p_currSelectedGroup])
+			{
+				//add champion if it's not in the list
+				if (m_data["champions"][m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]] == undefined)							
+					p_data.push(CreateEmptyDataTableRow(m_data["constants"][p_currSelectedLane][p_currSelectedGroup][pChamp]));
 			}
 		}
 	}
@@ -1466,7 +1485,7 @@ $(document).on('click','div#stackedChart>div>svg>g>g>rect',function()
 			rects[i].toggleClass('stacked-lane-selected');	
 			
 		//reset title to say "All Lanes", and reset xAxis text on the bottom (lanes)
-		$('#donutChart text.highcharts-title>tspan').text("Champion's Mastery: All Lanes")
+		$('#donutChart text.highcharts-title>tspan').text("Champions' Mastery: All Lanes")
 		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77'} );
 
 		//change our 'selection data', then pass it to the donut-chart-refresh and champions-table-refresh function
@@ -1487,7 +1506,7 @@ $(document).on('click','div#stackedChart>div>svg>g>g>rect',function()
 		$('div#stackedChart>div>svg>g.highcharts-xaxis-labels').children().eq(rects[0].index()).css({"fill": "#87DDC6", 'color': '#87DDC6', "text-decoration": "underline"} );
 
 		//change title to specify which lane we're seeing in details
-		$('#donutChart text.highcharts-title>tspan').text("Champion's Mastery: " + pLane)
+		$('#donutChart text.highcharts-title>tspan').text("Champions' Mastery: " + pLane)
 				
 		//change our 'selection data', then pass it to the donut-chart-refresh and champions-table-refresh function
 		m_data["selection"]["lane"] = ConvertStringToLane(pLane);
@@ -1539,6 +1558,23 @@ jQuery.fn.dataTableExt.oSort['grade-desc']  = function(a,b) {
 	var b_sort =  ConvertGradeToNumber(b);
 	return ((a_sort < b_sort) ? -1 : ((a_sort > b_sort) ?  1 : 0));
 };
+//level
+jQuery.fn.dataTableExt.oSort['level-asc'] = function(a,b) {
+	var pResult, a_sort, b_sort;
+	pResult = a.split("data-progress='")[1];
+	a_sort = pResult = pResult.split("'")[0];
+	pResult = b.split("data-progress='")[1];
+	b_sort = pResult = pResult.split("'")[0];
+	return ((a_sort < b_sort) ?  1 : ((a_sort > b_sort) ? -1 : 0));
+};
+jQuery.fn.dataTableExt.oSort['level-desc']  = function(a,b) {
+	var pResult, a_sort, b_sort;
+	pResult = a.split("data-progress='")[1];
+	a_sort = pResult = pResult.split("'")[0];
+	pResult = b.split("data-progress='")[1];
+	b_sort = pResult = pResult.split("'")[0];
+	return ((a_sort < b_sort) ? -1 : ((a_sort > b_sort) ?  1 : 0));
+};
 //inverts desc with asc (for consistency/intuitive purposes)
 jQuery.fn.dataTableExt.oSort['invert-asc'] = function(a,b) {
 	return ((a < b) ?  1 : ((a > b) ? -1 : 0));
@@ -1547,17 +1583,22 @@ jQuery.fn.dataTableExt.oSort['invert-desc']  = function(a,b) {
 	return ((a < b) ? -1 : ((a > b) ?  1 : 0));
 };
 //progress bars
-jQuery.fn.dataTableExt.oSort['progress-asc']  = function(a,b) {
-	var a_sort = (parseInt(a.split("<")[0]) === 0 ) ? 500000 : parseInt(a.split("<")[0]);
-	var b_sort = (parseInt(b.split("<")[0]) === 0 ) ? 500000 : parseInt(b.split("<")[0]);
-	return ((a_sort < b_sort) ? -1 : ((a_sort > b_sort) ?  1 : 0));
-};
-jQuery.fn.dataTableExt.oSort['progress-desc'] = function(a,b) {
-	var a_sort = (parseInt(a.split("<")[0]) === 0 ) ? 500000 : parseInt(a.split("<")[0]);
-	var b_sort = (parseInt(b.split("<")[0]) === 0 ) ? 500000 : parseInt(b.split("<")[0]);
+jQuery.fn.dataTableExt.oSort['progress-asc'] = function(a,b) {
+	var pResult, a_sort, b_sort;
+	pResult = a.split("data-amount='")[1];
+	a_sort = parseInt(pResult = pResult.split("'")[0]);
+	pResult = b.split("data-amount='")[1];
+	b_sort = parseInt(pResult = pResult.split("'")[0]);
 	return ((a_sort < b_sort) ?  1 : ((a_sort > b_sort) ? -1 : 0));
 };
-
+jQuery.fn.dataTableExt.oSort['progress-desc']  = function(a,b) {
+	var pResult, a_sort, b_sort;
+	pResult = a.split("data-amount='")[1];
+	a_sort = parseInt(pResult = pResult.split("'")[0]);
+	pResult = b.split("data-amount='")[1];
+	b_sort = parseInt(pResult = pResult.split("'")[0]);
+	return ((a_sort < b_sort) ? -1 : ((a_sort > b_sort) ?  1 : 0));
+};
 
 /* Toggle Button Event - Toggle b/w Mastery Score And # of Champions
 $(document).on('click','#toggle-masteryScore-numOfChampions', function(){
