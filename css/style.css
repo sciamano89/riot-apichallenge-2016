@@ -217,7 +217,7 @@ input[type="text"], .table-container input
 #vertical-text, #vertical-text-champions, #vertical-text-profile
 {
 	width: 80px;
-	height: 440px;
+	height: 470px;
 	background-color: #2F5B6C;
 	border-radius: 5px;
 	position:absolute;
@@ -866,4 +866,45 @@ input[type="text"], .table-container input
 	{
 	   background-position: 50px 50px;
 	}
+}
+/*------------------------------------------------------------------------------------------------------
+	Toggle between Primary and Secondary champions 
+------------------------------------------------------------------------------------------------------*/
+.toggle-group-container
+{
+	text-align:center;
+	margin:auto;
+}
+.toggle-group
+{
+	border-color: #54AF97;
+	margin-left:35px;
+	margin-right:-33px;
+}
+.toggle-group>.tab
+{
+	color: white;
+	display:inline-block;
+	width: 110px;
+	height:24px;
+	padding-top:5px;
+	margin-left:2px;
+	margin-right:2px;
+	border:  solid 2px #347161;
+	border-radius: 8px;
+	cursor:pointer;
+}
+.toggle-group>.tab:hover
+{
+	border:  solid 2px #3F8875;
+	box-shadow: 0 0 8px 1px rgba(165,255,210,0.30);
+}
+.toggle-group>.tab.active
+{
+	border:  solid 2px #54AF97;
+	box-shadow: 0 0 8px 1px rgba(165,255,210,0.67);
+}
+#group-primary
+{
+	cursor:default;
 }
