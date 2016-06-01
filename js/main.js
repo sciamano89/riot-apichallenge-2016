@@ -15,6 +15,8 @@ var m_donutChart;
 var m_championsTable;
 var m_scrolledOnce = false;
 var m_chestsEarned = Array();
+var	m_masteryScore;
+var	m_totalNumberOfChampions;
 
 //setup user selection
 m_data["selection"] = Array();
@@ -28,11 +30,18 @@ m_data["constants"]["jg"]  = ["primary", "secondary"];
 m_data["constants"]["mid"]  = ["primary", "secondary"];
 m_data["constants"]["supp"]  = ["primary", "secondary"];
 m_data["constants"]["adc"]  = ["primary", "secondary"];
-m_data["constants"]["top"]["primary"] = [266, 31, 122, 36, 245, 114, 41, 86, 150, 420, 39, 126, 85, 54, 62, 75, 111, 2, 80, 78, 58, 92, 68, 13, 98, 27, 14, 17, 48, 23, 6, 8, 106, 83];
-m_data["constants"]["jg"]["primary"] = [32, 60, 28, 9, 79, 120, 59, 24, 121, 203, 64, 57, 11, 76, 56, 20, 33, 421, 107, 113, 35, 102, 72, 77, 254, 19, 5, 154];
+//primary
+m_data["constants"]["top"]["primary"] = [266, 31, 122, 36, 245, 114, 41, 86, 150, 420, 39, 126, 85, 54, 62, 75, 111, 2, 80, 78, 58, 92, 68, 13, 98, 27, 14, 17, 48, 23, 6, 8, 106, 83, 57];
+m_data["constants"]["jg"]["primary"] = [32, 60, 28, 9, 79, 120, 59, 24, 121, 203, 64, 11, 76, 56, 20, 33, 421, 107, 113, 35, 102, 72, 77, 254, 19, 5, 154];
 m_data["constants"]["mid"]["primary"] = [103, 84, 34, 1, 136, 268, 63, 69, 131, 105, 3, 74, 30, 38, 55, 10, 7, 127, 99, 90, 61, 50, 134, 163, 91, 4, 45, 161, 112, 101, 157, 238, 115];
 m_data["constants"]["supp"]["primary"] = [12, 432, 53, 201, 40, 43, 89, 117, 25, 267, 37, 16, 223, 44, 412, 26, 143];
 m_data["constants"]["adc"]["primary"] = [22, 51, 42, 119, 81, 104, 202, 222, 429, 96, 236, 21, 82, 133, 15, 18, 29, 110, 67];
+//secondary
+m_data["constants"]["top"]["secondary"] = [266, 31, 122, 36, 245, 114, 41, 86, 150, 420, 39, 126, 85, 54, 62, 75, 111, 2, 80, 78, 58, 92, 68, 13, 98, 27, 14, 17, 48, 23, 6, 8, 106, 83, 24, 64, 57, 82, 50, 223, 67, 154, 133, 84, 105, 104, 120, 74, 59, 10, 117, 76, 33, 107, 102, 5, 157];
+m_data["constants"]["jg"]["secondary"] = [32, 60, 28, 9, 79, 120, 59, 24, 121, 203, 64, 57, 11, 76, 56, 20, 33, 421, 107, 113, 35, 102, 72, 77, 254, 19, 5, 154, 131, 36, 245, 10, 54, 2, 48, 23, 106, 62, 104, 266, 31, 105, 111, 80, 78, 14];
+m_data["constants"]["mid"]["secondary"] = [103, 84, 34, 1, 136, 268, 63, 69, 131, 105, 3, 74, 30, 38, 55, 10, 7, 127, 99, 90, 61, 50, 134, 163, 91, 4, 45, 161, 112, 101, 157, 238, 115, 31, 245, 81, 3, 9, 43, 117, 25, 13, 8, 26, 143, 42, 79, 126, 85, 96, 82, 80, 92, 236];
+m_data["constants"]["supp"]["secondary"] = [12, 432, 53, 201, 40, 43, 89, 117, 25, 267, 37, 16, 223, 44, 412, 26, 143, 9, 99, 111, 20, 17, 3, 1, 63, 98];
+m_data["constants"]["adc"]["secondary"] = [22, 51, 42, 119, 81, 104, 202, 222, 429, 96, 236, 21, 82, 133, 15, 18, 29, 110, 67, 85, 203, 4];
 /*------------------------------------------------------------------------------------------------------
 	FUNCTIONS
 ------------------------------------------------------------------------------------------------------*/
@@ -263,15 +272,14 @@ function GetNameAndRegionFromURL()
 						var p_nextChampToMasterText = "";
 						if (p_nextChampionToMasterLevel >= 5)
 						{
-							var tempNumOfTokens = (p_nextChampionToMasterLevel-3)-p_nextChampionToMasterPoints;
-							if (tempNumOfTokens === 1)
-								p_nextChampToMasterText = tempNumOfTokens + " token left";
-							else
-								p_nextChampToMasterText = tempNumOfTokens + " tokens left";
+							p_nextChampToMasterText = DisplayTokens(p_nextChampionToMasterLevel, p_nextChampionToMasterPoints, false);
+							$('#test-summary-champions #nexttomaster-champ-points').append(p_nextChampToMasterText);
 						}
 						else
+						{
 							p_nextChampToMasterText = p_nextChampionToMasterPoints + " pts left";
-						$('#test-summary-champions #nexttomaster-champ-points').text(p_nextChampToMasterText);
+							$('#test-summary-champions #nexttomaster-champ-points').text(p_nextChampToMasterText);
+						}
 						
 						//store next champion to earn a chest with inside Summary - Chests Earned
 						$('#test-summary-chests #nexttoearnchest-champion').attr("src", "http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/"+ m_data["constants"]["map"][p_nextChampionToEarnChest]["icon"] +".png");
@@ -282,7 +290,7 @@ function GetNameAndRegionFromURL()
 						m_data["selection"]["level"] = "-1";
 						
 						//start generating data for charts
-						CreateDataForStackedChart();
+						CreateDataForStackedChart(true);
 						$('#bar-intro>span').width("95%");
 					});	
 				});
@@ -574,7 +582,7 @@ function AnimateProgressBars()
 //	CHARTS
 //------------------------------------------------------------------------------------------------------
 //create temp data to feed into chart
-function CreateDataForStackedChart()
+function CreateDataForStackedChart(firstTime)
 {
 	var p_top = [0,1,2,3,4];
 	var p_jg = [0,1,2,3,4];
@@ -593,15 +601,15 @@ function CreateDataForStackedChart()
 	
 	for (pChamp in m_data["champions"])
 	{
-		if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["top"]["primary"]) >=0 )
+		if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["top"][m_data["selection"]["group"]]) >=0 )
 		{
 			p_top[((m_data["champions"][pChamp]["championLevel"])-1)].push(m_data["champions"][pChamp]["championId"]);
 		}
-		else if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["jg"]["primary"]) >=0 )
+		if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["jg"][m_data["selection"]["group"]]) >=0 )
 		{
 			p_jg[((m_data["champions"][pChamp]["championLevel"])-1)].push(m_data["champions"][pChamp]["championId"]);
 		}
-		else if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["mid"]["primary"]) >=0 )
+		if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["mid"][m_data["selection"]["group"]]) >=0 )
 		{
 			try
 			{
@@ -614,16 +622,14 @@ function CreateDataForStackedChart()
 				DisplayError(p_message);
 			}
 		}
-		else if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["supp"]["primary"]) >=0 )
+		if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["supp"][m_data["selection"]["group"]]) >=0 )
 		{
 			p_supp[((m_data["champions"][pChamp]["championLevel"])-1)].push(m_data["champions"][pChamp]["championId"]);
 		}
-		else if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["adc"]["primary"]) >=0 )
+		if ($.inArray(m_data["champions"][pChamp]["championId"], m_data["constants"]["adc"][m_data["selection"]["group"]]) >=0 )
 		{
 			p_adc[((m_data["champions"][pChamp]["championLevel"])-1)].push(m_data["champions"][pChamp]["championId"]);
 		}
-		else 
-			console.log ("FAILED BIG TIME: " + m_data["champions"][pChamp]["championId"]);
 	}
 		
 	//store data
@@ -636,19 +642,28 @@ function CreateDataForStackedChart()
 	
 	console.log ("data ready, creating stacked chart...");
 		
-	//ready for Charts: create them
-	CreateStackedChart("primary", true);
-	CreateDonutChart(m_data["selection"]["lane"], m_data["selection"]["group"], true);//changed
-	CreateChampionsTable();
-	CreateLaneGrades();
-	GetRandomIconName(); //for background image
-	
-	$('#bar-intro>span').width("100%");
+	if (firstTime === true)
+	{			
+		//ready for Charts: create them
+		CreateStackedChart(m_data["selection"]["group"], true);
+		CreateDonutChart(m_data["selection"]["lane"], m_data["selection"]["group"], true);
+		CreateChampionsTable();
+		CreateLaneGrades(true);
+		GetRandomIconName(); //for background image
+		$('#bar-intro>span').width("100%");
+	}
+	else //means we're toggling between primary and secondary champions
+	{
+		RefreshStackedChart();
+		RefreshDonutChart();
+		RefreshChampionsTable();
+		CreateLaneGrades(false);
+	}
 }
 
 //calculates the grade for each lane, then inserts the images under the stacked chart
 //also inserts data into the Summary Section
-function CreateLaneGrades()
+function CreateLaneGrades(firstTime)
 {
 	var p_grades = Array();
 	var p_gradesHTML = "";
@@ -674,7 +689,7 @@ function CreateLaneGrades()
 			}
 		}		
 		//include the champions at Mastery lvl 0, bringing down the grade a bit
-		count += m_data["constants"][lane]["primary"].length - count;
+		count += m_data["constants"][lane][m_data["selection"]["group"]].length - count;
 		//save best lane and grade 
 		if (tempLanePoints < p_lanePoints/count)
 		{
@@ -694,28 +709,33 @@ function CreateLaneGrades()
 		p_gradesHTML += "<img src='img/Grades/" + p_grades[grade] + ".png' class='grade'>";
 	
 	//calculate and store data
-	p_bestLane_score = CalculateMasteryScore(p_bestLane, "primary", false);
-	var masteryScore = CalculateMasteryScore("all", "primary", false);
-	var totalNumberOfChampions = (CalculateMMSPL("all", "primary")/7);
-	
+	p_bestLane_score = CalculateMasteryScore(p_bestLane, m_data["selection"]["group"], false);
+	if (firstTime)
+	{
+		m_masteryScore = CalculateMasteryScore("all", "primary", false);
+		m_totalNumberOfChampions = (CalculateMMSPL("all", "primary")/7);	
+	}
+
 	//insert grades under the stacked chart
+	if (firstTime === false)
+		$('#grades-container').empty();
 	$('#grades-container').append(p_gradesHTML);
 	
 	//insert some data in Summary - Summoner Profile
 	$('#profile-overall-grade').attr("src", "img/Grades/" + p_overallGrade+ ".png");
 	$('#profile-best-lane-grade').attr("src", "img/Grades/" + p_bestLaneGrade+ ".png");
 	$('#test-summary-profile div.test-3').text("Best Lane: " + (ConvertLaneToString(p_bestLane)).toUpperCase());
-	$('#test-summary-profile #mastery-score').text(masteryScore);	
+	$('#test-summary-profile #mastery-score').text(m_masteryScore);	
 	$('#test-summary-profile #mastery-best-lane-score').text(p_bestLane_score);	
-	$('#test-summary-profile #mastery-avg').text( Math.round((masteryScore/totalNumberOfChampions) * 10 ) / 10);	
-	$('#test-summary-profile #mastery-best-lane-avg').text(Math.round((p_bestLane_score/m_data["constants"][p_bestLane]["primary"].length) *10) /10);	
+	$('#test-summary-profile #mastery-avg').text( Math.round((m_masteryScore/m_totalNumberOfChampions) * 10 ) / 10);	
+	$('#test-summary-profile #mastery-best-lane-avg').text(Math.round((p_bestLane_score/m_data["constants"][p_bestLane][m_data["selection"]["group"]].length) *10) /10);	
 	
 	//insert data in Summary - Champions Mastered & Chests Earned
 	//total
-	$('#test-summary-champions #amount-total').text((m_data["stacked"]["top"][6].length + m_data["stacked"]["jg"][6].length +m_data["stacked"]["mid"][6].length +m_data["stacked"]["supp"][6].length +m_data["stacked"]["adc"][6].length) + "/" + (CalculateMMSPL("all", "primary")/7));
-	$('#test-summary-champions #bar-total>span').width((((m_data["stacked"]["top"][6].length + m_data["stacked"]["jg"][6].length +m_data["stacked"]["mid"][6].length +m_data["stacked"]["supp"][6].length +m_data["stacked"]["adc"][6].length)/(CalculateMMSPL("all", "primary")/7)) * 100).toString() + "%");
-	$('#test-summary-chests #amount-total').text(m_chestsEarned.length + "/" + (CalculateMMSPL("all", "primary")/7));
-	$('#test-summary-chests #bar-total>span').width(((m_chestsEarned.length/(CalculateMMSPL("all", "primary")/7)) * 100).toString() + "%");
+	$('#test-summary-champions #amount-total').text((m_data["stacked"]["top"][6].length + m_data["stacked"]["jg"][6].length +m_data["stacked"]["mid"][6].length +m_data["stacked"]["supp"][6].length +m_data["stacked"]["adc"][6].length) + "/" + m_totalNumberOfChampions);
+	$('#test-summary-champions #bar-total>span').width((((m_data["stacked"]["top"][6].length + m_data["stacked"]["jg"][6].length +m_data["stacked"]["mid"][6].length +m_data["stacked"]["supp"][6].length +m_data["stacked"]["adc"][6].length)/m_totalNumberOfChampions) * 100).toString() + "%");
+	$('#test-summary-chests #amount-total').text(m_chestsEarned.length + "/" + m_totalNumberOfChampions);
+	$('#test-summary-chests #bar-total>span').width(((m_chestsEarned.length/m_totalNumberOfChampions) * 100).toString() + "%");
 	//all other lanes
 	for (pLane in m_data["stacked"])
 	{
@@ -734,6 +754,15 @@ function CreateLaneGrades()
 
 }
 
+function RefreshStackedChart()
+{
+	var group = m_data["selection"]["group"];
+	m_stackedChart.series[0].setData(CalculateStackedData(1, group, true), false);
+	m_stackedChart.series[1].setData(CalculateStackedData(2, group, true), false);
+	m_stackedChart.series[2].setData(CalculateStackedData(3, group, true), false);
+	m_stackedChart.series[3].setData(CalculateStackedData(4, group, true), false);
+	m_stackedChart.series[4].setData(CalculateStackedData(5, group, true), true);
+}
 //data for refreshes
 function CalculateStackedData(level, group, numOfChampions)
 {
@@ -1292,7 +1321,7 @@ function CreateDataTableRow(champion)
 	}
 	else
 	{
-		p_ptsLeftString = p_usesTokens ? DisplayTokens(p_level,p_tokens) : p_ptsLeft + " <div class='meter' id='mastery-"+p_level+"' data-amount='"+p_pts+"'><span style='width: " + ((p_pts / (p_pts + p_ptsLeft)) * 100) + "%'>"+
+		p_ptsLeftString = p_usesTokens ? DisplayTokens(p_level,p_tokens, true) : p_ptsLeft + " <div class='meter' id='mastery-"+p_level+"' data-amount='"+p_pts+"'><span style='width: " + ((p_pts / (p_pts + p_ptsLeft)) * 100) + "%'>"+
 		"</span></div>";
 	}
 	
@@ -1318,7 +1347,7 @@ function CreateEmptyDataTableRow(champion)
 	return p_champ;
 }
 //helper function: displays the appropriate amount of tokens depending on the mastery level and the number of tokens earned
-function DisplayTokens(level, count)
+function DisplayTokens(level, count, progressBar)
 {
 	var p_string = "";
 	var p_max = level-3;
@@ -1330,8 +1359,11 @@ function DisplayTokens(level, count)
 	//create not earned tokens
 	for (var p_i2=0; p_i2<p_max-count; ++p_i2)
 		p_string += "<img class='token-not-earned' src='img/token_" + level + ".png'/>";
-	
-	return p_string + " <div class='meter' id='mastery-"+level+"' data-amount='"+TokenToPts(level,p_max-count)+"'><span style='width: 100%'>"+
+		
+	if (progressBar === false)
+		return p_string;
+	else
+		return p_string + " <div class='meter' id='mastery-"+level+"' data-amount='"+TokenToPts(level,p_max-count)+"'><span style='width: 100%'>"+
 	"</span></div>";
 }
 
@@ -1411,13 +1443,10 @@ function RefreshChampionsTable()
 			//adds level 0's too
 			for (lane in m_data["stacked"])
 			{
-				//console.log(m_data["champions"]);
-				for (pChamp in m_data["constants"][lane][p_currSelectedGroup])
-				{
-					//add champion if it's not in the list
+				//add champion if it's not in the list
+				for (pChamp in m_data["constants"][lane]["primary"])
 					if (m_data["champions"][m_data["constants"][lane][p_currSelectedGroup][pChamp]] == undefined )
-						p_data.push(CreateEmptyDataTableRow(m_data["constants"][lane][p_currSelectedGroup][pChamp]));
-				}
+							p_data.push(CreateEmptyDataTableRow(m_data["constants"][lane][p_currSelectedGroup][pChamp]));
 			}
 		}
 	}
@@ -1455,8 +1484,10 @@ function RefreshChampionsTable()
 	}
 	
 	//add data and redraw
+	console.log ("refreshed champ table");
 	m_championsTable.rows.add(p_data);
-	m_championsTable.draw();
+	m_championsTable.order([5, "asc"]).draw();
+	m_championsTable.order([4, "asc"]).draw();
 }
 //------------------------------------------------------------------------------------------------------
 //	JQUERY - CLICK EVENTS
@@ -1532,6 +1563,30 @@ $.fn.scrollView = function ()
         }, 1000);
     });
 }
+
+//toggle Champions' group from Primary to Secondary
+$(document).on('click','.toggle-group-container>.toggle-group>.tab#group-secondary',function(){
+	//toggle it
+	$(this).toggleClass('active');
+	
+	//then check its state
+	if ($(this).hasClass('active'))
+		m_data["selection"]["group"] = "secondary";
+	else
+		m_data["selection"]["group"] = "primary";
+		
+	//reset all levels
+	m_data["selection"]["level"] = "-1";
+	
+	//reset donut's selected slices	
+	var p_selectedPoints = m_donutChart.getSelectedPoints();
+	if (p_selectedPoints.length > 0)
+		for (point in p_selectedPoints)
+			p_selectedPoints[point].select();
+	
+	//recreate new data for stacked, which refreshes all other sections
+	CreateDataForStackedChart(false);
+});
 
 //------------------------------------------------------------------------------------------------------
 //	DATA TABLE: CUSTOM SORTING
