@@ -203,8 +203,8 @@ function GetNameAndRegionFromURL()
 							p_n1ChampPoints = pData[p_champion]["championPoints"];
 						}
 						
-						//if first champion (highest champ pts) OR savedLevel < this champs Level OR we have at least 1 champ that's lvl 5 and savedPts/Tokens < this champ's tokens
-						if (p_nextChampionToMasterId === 0 || p_nextChampionToMasterLevel < pData[p_champion]["championLevel"] || (p_is5orHigher === true && p_nextChampionToMasterPoints < pData[p_champion]["tokensEarned"]))
+						//save highest champion
+						if (p_nextChampionToMasterId === 0 || p_nextChampionToMasterLevel < pData[p_champion]["championLevel"] || (p_nextChampionToMasterLevel == pData[p_champion]["championLevel"] && (p_is5orHigher === true && p_nextChampionToMasterPoints < pData[p_champion]["tokensEarned"])))
 						{
 							if (pData[p_champion]["championLevel"] < 7)
 							{
