@@ -37,9 +37,9 @@ m_data["constants"]["mid"]["primary"] = [103, 84, 34, 1, 136, 268, 63, 69, 131, 
 m_data["constants"]["supp"]["primary"] = [12, 432, 53, 201, 40, 43, 89, 117, 25, 267, 37, 16, 223, 44, 412, 26, 143];
 m_data["constants"]["adc"]["primary"] = [22, 51, 42, 119, 81, 104, 202, 222, 429, 96, 236, 21, 82, 133, 15, 18, 29, 110, 67];
 //secondary
-m_data["constants"]["top"]["secondary"] = [266, 31, 122, 36, 245, 114, 41, 86, 150, 420, 39, 126, 85, 54, 62, 75, 111, 2, 80, 78, 58, 92, 68, 13, 98, 27, 14, 17, 48, 23, 6, 8, 106, 83, 24, 64, 57, 82, 50, 223, 67, 154, 133, 84, 105, 104, 120, 74, 59, 10, 117, 76, 33, 107, 102, 5, 157];
-m_data["constants"]["jg"]["secondary"] = [32, 60, 28, 9, 79, 120, 59, 24, 121, 203, 64, 57, 11, 76, 56, 20, 33, 421, 107, 113, 35, 102, 72, 77, 254, 19, 5, 154, 131, 36, 245, 10, 54, 2, 48, 23, 106, 62, 104, 266, 31, 105, 111, 80, 78, 14];
-m_data["constants"]["mid"]["secondary"] = [103, 84, 34, 1, 136, 268, 63, 69, 131, 105, 3, 74, 30, 38, 55, 10, 7, 127, 99, 90, 61, 50, 134, 163, 91, 4, 45, 161, 112, 101, 157, 238, 115, 31, 245, 81, 3, 9, 43, 117, 25, 13, 8, 26, 143, 42, 79, 126, 85, 96, 82, 80, 92, 236];
+m_data["constants"]["top"]["secondary"] = [266, 31, 122, 36, 245, 114, 41, 86, 150, 420, 39, 126, 85, 54, 62, 75, 111, 2, 80, 78, 58, 92, 68, 13, 98, 27, 14, 17, 48, 23, 6, 8, 106, 83, 57, 24, 64, 82, 50, 223, 67, 154, 133, 84, 105, 104, 120, 74, 59, 10, 117, 76, 33, 107, 102, 5, 157];
+m_data["constants"]["jg"]["secondary"] = [32, 60, 28, 9, 79, 120, 59, 24, 121, 203, 64, 11, 76, 56, 20, 33, 421, 107, 113, 35, 102, 72, 77, 254, 19, 5, 154, 57, 131, 36, 245, 10, 54, 2, 48, 23, 106, 62, 104, 266, 31, 105, 111, 80, 78, 14];
+m_data["constants"]["mid"]["secondary"] = [103, 84, 34, 1, 136, 268, 63, 69, 131, 105, 3, 74, 30, 38, 55, 10, 7, 127, 99, 90, 61, 50, 134, 163, 91, 4, 45, 161, 112, 101, 157, 238, 115, 31, 245, 81, 9, 43, 117, 25, 13, 8, 26, 143, 42, 79, 126, 85, 96, 82, 80, 92, 236];
 m_data["constants"]["supp"]["secondary"] = [12, 432, 53, 201, 40, 43, 89, 117, 25, 267, 37, 16, 223, 44, 412, 26, 143, 9, 99, 111, 20, 17, 3, 1, 63, 98];
 m_data["constants"]["adc"]["secondary"] = [22, 51, 42, 119, 81, 104, 202, 222, 429, 96, 236, 21, 82, 133, 15, 18, 29, 110, 67, 85, 203, 4];
 /*------------------------------------------------------------------------------------------------------
@@ -364,9 +364,18 @@ function CalculateMasteryScoreOrNumOfChampions(lane, group, plevel, numOfChampio
 		if (level > 0)
 		{
 			var p_count = 0;
-			for (plane in m_data["stacked"])
-				p_count += (m_data["stacked"][plane][level-1].length*(i+1));
-				
+			if(group === "primary")
+			{
+				for (plane in m_data["stacked"])
+					p_count += (m_data["stacked"][plane][level-1].length*(i+1));
+			}
+			else
+			{
+				for (champ in m_data["champions"])
+					if (m_data["champions"][champ]["championLevel"] === level)
+						p_count++;
+				console.log ("count: " + p_count + " level: " + level);
+			}
 			return (p_count);	
 		}
 		else
@@ -375,13 +384,24 @@ function CalculateMasteryScoreOrNumOfChampions(lane, group, plevel, numOfChampio
 			for (plane in m_data["stacked"])
 			{	
 				var p_count = 0;
-				for (var x=0; x<7; ++x)
+				if(group === "primary")
 				{
-					p_count += m_data["stacked"][plane][x].length;
+					for (var x=0; x<7; ++x)
+					{
+						p_count += m_data["stacked"][plane][x].length;
+					}
+					p_total += m_data["constants"][plane][group].length - p_count;
 				}
-				p_total += m_data["constants"][plane][group].length - p_count;
+				else
+				{
+					for (pChamp in m_data["constants"][plane]["primary"])
+					{
+						//add champion if it's not in the list
+						if (m_data["champions"][m_data["constants"][plane]["primary"][pChamp]] == undefined )
+							p_total++;
+					}
+				}
 			}
-					
 			return (p_total);
 		}
 	}
@@ -651,6 +671,8 @@ function CreateDataForStackedChart(firstTime)
 		CreateLaneGrades(true);
 		GetRandomIconName(); //for background image
 		$('#bar-intro>span').width("100%");
+		//modify stacked chart css
+		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77'} );
 	}
 	else //means we're toggling between primary and secondary champions
 	{
@@ -658,6 +680,13 @@ function CreateDataForStackedChart(firstTime)
 		RefreshDonutChart();
 		RefreshChampionsTable();
 		CreateLaneGrades(false);
+		//modify stacked chart css
+		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77'} );
+		//get lane string to pass to donut chart
+		var pLane = m_data["selection"]["lane"].toLowerCase();
+		
+		//console.log ($('div#stackedChart>div>svg>g.highcharts-xaxis-labels>text').text().toLowerCase());
+		$('div#stackedChart>div>svg>g.highcharts-xaxis-labels>text:contains('+ConvertLaneToString(pLane)+')').css({"fill": "#87DDC6", 'color': '#87DDC6', "text-decoration": "underline"} );
 	}
 }
 
@@ -1249,9 +1278,6 @@ function GetDonutChartOptions(lane, group, numOfChampions)
 function CreateStackedChart(group, numOfChampions)
 {
 	m_stackedChart = new Highcharts.Chart("stackedChart", GetStackedChartOptions(group, numOfChampions));
-	
-	//modify css
-	$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77'} );
 }
 
 function CreateDonutChart(lane, group, numOfChampions)
@@ -1333,7 +1359,6 @@ function CreateDataTableRow(champion)
 function CreateEmptyDataTableRow(champion)
 {
 	var p_champ = Array();
-
 	p_champ = [
 		"<img class='champ-icon' src='http://ddragon.leagueoflegends.com/cdn/" + m_patch + "/img/champion/" + m_data["constants"]["map"][champion]["icon"] + ".png'/>",
 		m_data["constants"]["map"][champion]["name"],
@@ -1417,22 +1442,30 @@ function RefreshChampionsTable()
 		//if a mastery level is specified
 		if (p_currSelectedLevel > 0)
 		{
-			for (lane in m_data["stacked"])
+			if (p_currSelectedGroup === "primary")
+			{	
+				for (lane in m_data["stacked"])
+				{
+					for (champ in m_data["stacked"][lane][p_currSelectedLevel-1])
+						p_data.push(CreateDataTableRow(m_data["stacked"][lane][p_currSelectedLevel-1][champ]));
+				}
+			}
+			else
 			{
-				for (champ in m_data["stacked"][lane][p_currSelectedLevel-1])
-					p_data.push(CreateDataTableRow(m_data["stacked"][lane][p_currSelectedLevel-1][champ]));
+				for (champ in m_data["champions"])
+					if (m_data["champions"][champ]["championLevel"] === p_currSelectedLevel)
+						p_data.push(CreateDataTableRow(m_data["champions"][champ]["championId"]));
 			}
 		}
 		else if (p_currSelectedLevel === 0)	//no mastery 
 		{	
 			for (lane in m_data["stacked"])
 			{
-				//console.log(m_data["champions"]);
-				for (pChamp in m_data["constants"][lane][p_currSelectedGroup])
+				for (pChamp in m_data["constants"][lane]["primary"])
 				{
 					//add champion if it's not in the list
-					if (m_data["champions"][m_data["constants"][lane][p_currSelectedGroup][pChamp]] == undefined )
-						p_data.push(CreateEmptyDataTableRow(m_data["constants"][lane][p_currSelectedGroup][pChamp]));
+					if (m_data["champions"][m_data["constants"][lane]["primary"][pChamp]] == undefined )
+						p_data.push(CreateEmptyDataTableRow(m_data["constants"][lane]["primary"][pChamp]));
 				}
 			}
 		}
@@ -1446,7 +1479,7 @@ function RefreshChampionsTable()
 				//add champion if it's not in the list
 				for (pChamp in m_data["constants"][lane]["primary"])
 					if (m_data["champions"][m_data["constants"][lane][p_currSelectedGroup][pChamp]] == undefined )
-							p_data.push(CreateEmptyDataTableRow(m_data["constants"][lane][p_currSelectedGroup][pChamp]));
+						p_data.push(CreateEmptyDataTableRow(m_data["constants"][lane][p_currSelectedGroup][pChamp]));
 			}
 		}
 	}
@@ -1537,7 +1570,7 @@ $(document).on('click','div#stackedChart>div>svg>g>g>rect',function()
 		$('div#stackedChart>div>svg>g.highcharts-xaxis-labels').children().eq(rects[0].index()).css({"fill": "#87DDC6", 'color': '#87DDC6', "text-decoration": "underline"} );
 
 		//change title to specify which lane we're seeing in details
-		$('#donutChart text.highcharts-title>tspan').text("Champions' Mastery: " + pLane)
+		$('#donutChart text.highcharts-title>tspan').text("Champions' Mastery: " + pLane);
 				
 		//change our 'selection data', then pass it to the donut-chart-refresh and champions-table-refresh function
 		m_data["selection"]["lane"] = ConvertStringToLane(pLane);
@@ -1654,6 +1687,19 @@ jQuery.fn.dataTableExt.oSort['progress-desc']  = function(a,b) {
 	b_sort = parseInt(pResult = pResult.split("'")[0]);
 	return ((a_sort < b_sort) ? -1 : ((a_sort > b_sort) ?  1 : 0));
 };
+
+/*
+$('#champions-table').on( 'draw.dt', function() {
+    var seen = {};
+    $('#champions-table table tr').each(function() {
+        var txt = $(this).text();
+        if (seen[txt])
+            $(this).remove();
+        else
+            seen[txt] = true;
+    });
+});
+*/
 
 /* Toggle Button Event - Toggle b/w Mastery Score And # of Champions
 $(document).on('click','#toggle-masteryScore-numOfChampions', function(){
