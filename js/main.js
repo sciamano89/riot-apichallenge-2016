@@ -568,10 +568,16 @@ function GetRandomIconName()
 	var p_champIconName = "";
 	var p_champs = Array();
 	
-	//loop through all champions at lvl 5 in all lanes, and store them temporarily
+	//loop through all champions at lvl 5-7 in all lanes, and store them temporarily
 	for (pLane in m_data["stacked"])
+	{
 		for (pChamp in m_data["stacked"][pLane][4])
 			p_champs.push (m_data["stacked"][pLane][4][pChamp]);
+		for (pChamp in m_data["stacked"][pLane][5])
+			p_champs.push (m_data["stacked"][pLane][5][pChamp]);
+		for (pChamp in m_data["stacked"][pLane][6])
+			p_champs.push (m_data["stacked"][pLane][6][pChamp]);
+	}
 			
 	var randomIndex = GetRandom(0, p_champs.length-1)
 	
