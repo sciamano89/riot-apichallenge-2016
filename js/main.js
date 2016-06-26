@@ -686,7 +686,11 @@ function CreateDataForStackedChart(firstTime)
 		GetRandomIconName(); //for background image
 		$('#bar-intro>span').width("100%");
 		//modify stacked chart css
-		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77'} );
+		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77', "text-decoration": "none"} );
+		//grade tooltip
+		var p_gradeHeader = $("th>div:contains(Grade)");
+		p_gradeHeader.addClass('tooltip');
+		p_gradeHeader.append("<div class='tooltiptext tooltip-top'>Mastery Profiler's grade: based only on Champion Points, not Highest Grade Earned</div>");
 	}
 	else //means we're toggling between primary and secondary champions
 	{
@@ -695,7 +699,7 @@ function CreateDataForStackedChart(firstTime)
 		RefreshChampionsTable();
 		CreateLaneGrades(false);
 		//modify stacked chart css
-		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77'} );
+		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77', "text-decoration": "none"} );
 		//get lane string to pass to donut chart
 		var pLane = m_data["selection"]["lane"].toLowerCase();
 		
@@ -1564,7 +1568,7 @@ $(document).on('click','div#stackedChart>div>svg>g>g>rect',function()
 			
 		//reset title to say "All Lanes", and reset xAxis text on the bottom (lanes)
 		$('#donutChart text.highcharts-title>tspan').text("Champions' Mastery: All Lanes")
-		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77'} );
+		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77', "text-decoration": "none"} );
 
 		//change our 'selection data', then pass it to the donut-chart-refresh and champions-table-refresh function
 		m_data["selection"]["lane"] = "all";
@@ -1573,7 +1577,7 @@ $(document).on('click','div#stackedChart>div>svg>g>g>rect',function()
 	else //clicked on a new lane
 	{
 		//reset xAxis text on the bottom (lanes)
-		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77'} );
+		$(".highcharts-axis-labels text").css({'fill': '#3A6B77', 'color': '#3A6B77', "text-decoration": "none"} );
 		//remove any selection 
 		$("div#stackedChart>div>svg>g>g>rect").removeClass('stacked-lane-selected');
 		for (var i=0; i<rects.length; ++i)
